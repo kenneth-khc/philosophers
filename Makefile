@@ -1,9 +1,9 @@
 NAME = philo
 CFLAGS = -Wall -Werror -Wextra
-FSAN = -fsanitize=address -g3
-ARGS = 5 100 100 100
+FSAN = -fsanitize=thread -g3
+ARGS = 5 1000 100 100 1
 
-SOURCES = philo.c parsing.c time.c eating.c
+SOURCES = main.c parsing.c init.c time.c monitor.c threads.c utils.c
 
 a:
 	cc $(SOURCES) $(CFLAGS) $(FSAN) -o $(NAME) && ./$(NAME) $(ARGS)
