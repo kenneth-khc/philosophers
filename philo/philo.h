@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/28 16:52:56 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/28 23:54:42 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,26 +20,27 @@
 # include <pthread.h>
 # include <stdbool.h>
 
-# define BLK "\e[0;30m"
-# define MAG "\e[0;31m"
-# define GRN "\e[0;32m"
-# define YEL "\e[0;33m"
-# define BLU "\e[0;34m"
+/* Ansi color codes */
+# define BLACK "\e[0;30m"
+# define MAGENTA "\e[0;31m"
+# define GREEN "\e[0;32m"
+# define YELLOW "\e[0;33m"
+# define BLUE "\e[0;34m"
 # define RED "\e[0;35m"
 # define BOLD_RED "\e[1;31m"
-# define CYN "\e[0;36m"
-# define WHT "\e[0;37m"
+# define CYAN "\e[0;36m"
+# define WHITE "\e[0;37m"
 # define COLOR_RESET "\e[0m"
 
-// #define BLK ""
-// #define MAG ""
-// #define GRN ""
-// #define YEL ""
-// #define BLU ""
+// #define BLACK ""
+// #define MAGENTA ""
+// #define GREEN ""
+// #define YELLOW ""
+// #define BLUE ""
 // #define RED ""
 // #define BOLD_RED ""
-// #define CYN ""
-// #define WHT ""
+// #define CYAN ""
+// #define WHITE ""
 // #define COLOR_RESET ""
 
 typedef struct s_rules
@@ -86,10 +87,11 @@ enum
 };
 
 bool		parse_args(int argc, char **argv, t_simulation *args);
-void		init_philos(t_philosopher **philos, t_simulation *args);
-void		init_mutexes(t_philosopher *philo, pthread_mutex_t *forks,
+bool		init_philos(t_philosopher **philos, t_simulation *args);
+bool		init_mutexes(t_philosopher **philo, pthread_mutex_t **forks,
 				int count);
-void		init_hands(t_philosopher *philo, t_simulation *sim);
+// void		init_hands(t_philosopher *philo, t_simulation *sim);
+void		init_hands(t_philosopher **philo, pthread_mutex_t **forks, uint16_t count);
 
 // Timing
 void		sleep_millisecond(uint64_t milliseconds);
@@ -106,6 +108,7 @@ void		philo_sleeping(t_philosopher *philo);
 void		philo_thinking(t_philosopher *philo);
 
 // Main thread
+void	start_simulation(t_philosopher *philos, uint16_t philo_count, uint64_t start_time);
 void		monitor_philos(t_simulation *sim);
 bool		philo_starved(t_philosopher *philo);
 bool		check_philos_death(uint16_t philo_count, t_philosopher *philos);

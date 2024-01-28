@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/28 16:56:16 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/28 22:16:40 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,9 @@ bool	pick_up_left_fork(t_philosopher *philo)
 		return (false);
 	pthread_mutex_lock(philo->left_fork);
 	if (philo_is_alive(philo))
-		printf(BLU"%.10llu %d has taken a fork\n"COLOR_RESET,
-			get_time_since(philo->start_time), philo->id);
-	// color_printf(BLU, philo->start_time, philo->id, "has taken a fork\n");
+		// printf(BLUE"%.10llu %d has taken a fork\n"COLOR_RESET,
+		// 	get_time_since(philo->start_time), philo->id);
+		color_printf(BLUE, philo->start_time, philo->id, "has taken a fork");
 	return (true);
 }
 
@@ -59,9 +59,9 @@ bool	pick_up_right_fork(t_philosopher *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
 	if (philo_is_alive(philo))
-		printf(BLU"%.10llu %d has taken a fork\n"COLOR_RESET,
-			get_time_since(philo->start_time), philo->id);
-	// color_printf(BLU, philo->start_time, philo->id, "has taken a fork\n");
+		// printf(BLUE"%.10llu %d has taken a fork\n"COLOR_RESET,
+		// 	get_time_since(philo->start_time), philo->id);
+	color_printf(BLUE, philo->start_time, philo->id, "has taken a fork");
 	return (true);
 }
 
@@ -71,9 +71,9 @@ void	philo_eating(t_philosopher *philo)
 	philo->last_meal_time = get_current_time();
 	pthread_mutex_unlock(&philo->time_mutex);
 	if (philo_is_alive(philo))
-		printf(MAG"%.10llu %d is eating\n"COLOR_RESET,
-			get_time_since(philo->start_time), philo->id);
-	// color_printf(MAG, philo->start_time, philo->id, "is eating\n");
+		// printf(MAGENTA"%.10llu %d is eating\n"COLOR_RESET,
+		// 	get_time_since(philo->start_time), philo->id);
+		color_printf(MAGENTA, philo->start_time, philo->id, "is eating");
 	philo->state = EATING;
 	sleep_millisecond(philo->rules.time_to_eat);
 	pthread_mutex_lock(&philo->eat_count_mutex);
@@ -86,9 +86,9 @@ void	philo_eating(t_philosopher *philo)
 void	philo_sleeping(t_philosopher *philo)
 {
 	if (philo_is_alive(philo))
-		printf(CYN"%.10llu %d is sleeping\n"COLOR_RESET,
-			get_time_since(philo->start_time), philo->id);
-	// color_printf(CYN, philo->start_time, philo->id, "is sleeping\n");
+		// printf(CYAN"%.10llu %d is sleeping\n"COLOR_RESET,
+		// 	get_time_since(philo->start_time), philo->id);
+		color_printf(CYAN, philo->start_time, philo->id, "is sleeping");
 	philo->state = SLEEPING;
 	sleep_millisecond(philo->rules.time_to_sleep);
 }
@@ -97,9 +97,9 @@ void	philo_thinking(t_philosopher *philo)
 {
 	philo->state = THINKING;
 	if (philo_is_alive(philo))
-		printf(YEL"%.10llu %d is thinking\n"COLOR_RESET,
-			get_time_since(philo->start_time), philo->id);
-	// color_printf(YEL, philo->start_time, philo->id, "is thinking\n");
+		// printf(YELLOW"%.10llu %d is thinking\n"COLOR_RESET,
+		// 	get_time_since(philo->start_time), philo->id);
+		color_printf(YELLOW, philo->start_time, philo->id, "is thinking");
 }
 
 bool	philo_is_alive(t_philosopher *philo)
