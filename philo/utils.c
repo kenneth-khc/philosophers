@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 05:28:08 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/27 09:43:19 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/28 16:59:11 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ const char *message)
 
 bool	check_eat_count(uint16_t philo_count, t_philosopher *philos)
 {
-	int	i;
+	int				i;
 	t_philosopher	*philo;
 
 	i = 0;

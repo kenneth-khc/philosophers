@@ -4,3 +4,4 @@ a.out
 *.s
 .vscode/
 .DS_Store
+*.sh

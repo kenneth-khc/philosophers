@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/27 09:28:08 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/28 16:41:32 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,12 @@ void	init_hands(t_philosopher *philo, t_simulation *sim)
 	{
 		philo->left_fork = &sim->forks[sim->philo_count - 1];
 		philo->right_fork = &sim->forks[0];
+		if (philo->right_fork == philo->left_fork)
+			philo->left_fork = NULL;
 	}
 	else
 	{
 		philo->left_fork = &sim->forks[philo->id - 2];
 		philo->right_fork = &sim->forks[philo->id - 1];
 	}
-	// printf("ID %d\n", philo->id);
-	// printf("%p %p\n", philo->left_fork, philo->right_fork);
 }

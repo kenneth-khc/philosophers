@@ -6,13 +6,14 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/27 09:33:21 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/28 16:51:23 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 static int	philo_atoi(char *str);
+static void	set_simulation_rules(t_simulation *sim, char **args);
 
 void	print_simulation_struct(t_simulation *args)
 {
@@ -24,39 +25,45 @@ void	print_simulation_struct(t_simulation *args)
 	printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n");
 }
 
-void	parse_args(int argc, char **argv, t_simulation *args)
+bool	parse_args(int argc, char **argv, t_simulation *args)
 {
-	struct timeval	current_time;
-
 	if (argc == 5 || argc == 6)
-	{	
-		args->philo_count = philo_atoi(argv[1]);
-		args->rules.time_to_die = philo_atoi(argv[2]);
-		args->rules.time_to_eat = philo_atoi(argv[3]);
-		args->rules.time_to_sleep = philo_atoi(argv[4]);
-		if (argv[5])
-			args->rules.min_eat = philo_atoi(argv[5]);
-		else
-			args->rules.min_eat = -1;
-		gettimeofday(&current_time, NULL);
-		args->start_time = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
-		printf(">>> START %llu\n", args->start_time);
+	{
+		set_simulation_rules(args, argv);
+		return (true);
 	}
 	else
 	{
 		printf("Invalid number of arguments.\n");
 		printf("Usage: <number_of_philosophers> "
-		"<time_to_die> <time_to_eat> <time_to_sleep> " 
-		"[number_of_times_each_philosopher_must_eat]\n");
-		exit(EXIT_FAILURE);
+			"<time_to_die> <time_to_eat> <time_to_sleep> "
+			"[number_of_times_each_philosopher_must_eat]\n");
+		return (false);
 	}
 	print_simulation_struct(args);
+}
+
+static void	set_simulation_rules(t_simulation *sim, char **args)
+{
+	struct timeval	time_now;
+
+	sim->philo_count = philo_atoi(args[1]);
+	sim->rules.time_to_die = philo_atoi(args[2]);
+	sim->rules.time_to_eat = philo_atoi(args[3]);
+	sim->rules.time_to_sleep = philo_atoi(args[4]);
+	if (args[5])
+		sim->rules.min_eat = philo_atoi(args[5]);
+	else
+		sim->rules.min_eat = -1;
+	gettimeofday(&time_now, NULL);
+	sim->start_time = (time_now.tv_sec * 1000) + (time_now.tv_usec / 1000);
+	printf(">>> START %llu\n", sim->start_time);
 }
 
 static int	philo_atoi(char *str)
 {
 	int	num;
-	
+
 	num = 0;
 	while (*str)
 	{
