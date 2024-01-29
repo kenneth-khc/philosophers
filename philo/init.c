@@ -6,23 +6,21 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 17:22:12 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 23:22:21 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	init_mutexes(t_philosopher **philos, pthread_mutex_t **forks, int count)
+t_status	init_mutexes(t_philosopher **philos,
+pthread_mutex_t **forks, int count)
 {
 	int				i;
 	t_philosopher	*philo;
 
 	*forks = malloc(sizeof(**forks) * count);
 	if (!*forks)
-	{
-		printf("Malloc failed\n");
-		return (false);
-	}
+		return (E_MALLOC_FAILED);
 	i = 0;
 	while (i < count)
 	{
@@ -35,11 +33,11 @@ bool	init_mutexes(t_philosopher **philos, pthread_mutex_t **forks, int count)
 		i++;
 	}
 	init_hands(philos, forks, count);
-	return (true);
+	return (SUCCESS);
 }
 
-void	init_hands(t_philosopher **philos, 
-	pthread_mutex_t **forks, uint16_t count)
+void	init_hands(t_philosopher **philos,
+pthread_mutex_t **forks, uint16_t count)
 {
 	int				i;
 	t_philosopher	*philo;
@@ -64,7 +62,7 @@ void	init_hands(t_philosopher **philos,
 	}
 }
 
-enum e_status init_philos(t_philosopher **philos, t_simulation *args)
+t_status	init_philos(t_philosopher **philos, t_simulation *args)
 {
 	int				i;
 	t_philosopher	*philo;
@@ -72,10 +70,7 @@ enum e_status init_philos(t_philosopher **philos, t_simulation *args)
 	i = 0;
 	*philos = malloc(sizeof(**philos) * args->philo_count);
 	if (!*philos)
-	{
-		printf("Malloc failed\n");
-		return (false);
-	}
+		return (E_MALLOC_FAILED);
 	while (i < args->philo_count)
 	{
 		philo = &(*philos)[i];
@@ -88,5 +83,5 @@ enum e_status init_philos(t_philosopher **philos, t_simulation *args)
 		philo->eat_count = 0;
 		i++;
 	}
-	return (true);
+	return (SUCCESS);
 }

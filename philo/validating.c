@@ -6,21 +6,23 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 16:41:55 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 17:11:51 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 23:40:36 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static enum e_status philo_itoa(int num, char *original);
-static uint8_t get_num_len(int num);
-static bool	invalid_arg(char *original, char *reconverted);
+static t_status	philo_itoa(int num, char *original);
+static uint8_t	get_num_len(int num);
+static bool		invalid_arg(char *original, char *reconverted);
 
-enum e_status	validate_rules(t_rules *rules, char **args)
+t_status	validate_rules(t_simulation *simulation, char **args)
 {
-	enum e_status	status;
+	t_status	status;
+	t_rules		*rules;
 
-	status = philo_itoa(rules->philo_count, args[1]);
+	rules = &simulation->rules;
+	status = philo_itoa(simulation->philo_count, args[1]);
 	if (status != SUCCESS)
 		return (status);
 	status = philo_itoa(rules->time_to_die, args[2]);
@@ -37,15 +39,15 @@ enum e_status	validate_rules(t_rules *rules, char **args)
 	return (status);
 }
 
-static enum e_status philo_itoa(int num, char *original)
+static t_status	philo_itoa(int num, char *original)
 {
 	uint8_t	digits;
 	char	*res;
 
 	digits = get_num_len(num);
 	res = malloc(sizeof(*res) * (digits + 1));
-		if (!res)
-			return (E_MALLOC_FAILED);
+	if (!res)
+		return (E_MALLOC_FAILED);
 	res[digits] = '\0';
 	while (digits > 0)
 	{
@@ -62,9 +64,9 @@ static enum e_status philo_itoa(int num, char *original)
 	return (SUCCESS);
 }
 
-static uint8_t get_num_len(int num)
+static uint8_t	get_num_len(int num)
 {
-	uint8_t len;
+	uint8_t	len;
 
 	len = 0;
 	if (num == 0)
@@ -89,19 +91,27 @@ static bool	invalid_arg(char *original, char *reconverted)
 	return (false);
 }
 
-void	handle_error(enum e_status status)
+#define MALLOC_FAILED_ERR "Malloc failed\n"
+#define INVALID_ARG_COUNT_ERR "Invalid number of arguments.\n"
+#define USAGE "Usage: <number_of_philosophers> <time_to_die> <time_to_eat>"
+#define USAGE2 "<time_to_sleep> [number_of_times_each_philosopher_must_eat]\n"
+#define ARG_TYPE_ERR "Invalid argument type.\nArguments should be numbers.\n"
+#define THREAD_FAILED_ERR "Thread failed\n"
+
+void	handle_errors(t_status status)
 {
 	if (status == E_MALLOC_FAILED)
-		printf("Malloc failed\n");
-	if (status == E_INVALID_ARG_COUNT)
+		write(STDERR_FILENO, MALLOC_FAILED_ERR, sizeof(MALLOC_FAILED_ERR) - 1);
+	else if (status == E_INVALID_ARG_COUNT)
 	{
-		printf("Invalid number of arguments.\n");
-		printf("Usage: <number_of_philosophers> "
-			"<time_to_die> <time_to_eat> <time_to_sleep> "
-			"[number_of_times_each_philosopher_must_eat]\n");
+		write(STDERR_FILENO,
+			INVALID_ARG_COUNT_ERR, sizeof(INVALID_ARG_COUNT_ERR) - 1);
+		write(STDERR_FILENO, USAGE, sizeof(USAGE) - 1);
+		write(STDERR_FILENO, USAGE2, sizeof(USAGE2) - 1);
 	}
 	else if (status == E_INVALID_ARG_TYPE)
-	{
-		printf("wrong format bozo\n");
-	}
+		write(STDERR_FILENO,
+			ARG_TYPE_ERR, sizeof(ARG_TYPE_ERR) - 1);
+	else if (status == E_THREAD_FAILED)
+		write(STDERR_FILENO, THREAD_FAILED_ERR, sizeof(THREAD_FAILED_ERR) - 1);
 }

@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 17:12:55 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 23:22:21 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ void	print_simulation_struct(t_simulation *args)
 	printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n");
 }
 
-enum e_status	parse_args(int argc, char **argv, t_simulation *args)
+t_status	parse_args(int argc, char **argv, t_simulation *args)
 {
-	enum e_status	status;
+	t_status	status;
 
 	if (argc == 5 || argc == 6)
 	{
@@ -71,4 +71,3 @@ static int	philo_atoi(char *str)
 	}
 	return (num);
 }
-

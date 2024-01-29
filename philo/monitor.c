@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 23:57:56 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/28 22:27:46 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 23:18:37 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,6 @@ void	monitor_philos(t_simulation *sim)
 		pthread_join((sim->philos)[i].thread, NULL);
 		i++;
 	}
-	// printf(GREEN"%.10llu Simulation ended"COLOR_RESET,
-		// get_time_since(sim->start_time));
 	color_printf(GREEN, sim->start_time, 0, "Simulation ended");
 }
 

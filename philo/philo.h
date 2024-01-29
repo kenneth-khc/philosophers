@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 17:22:27 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 23:43:57 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,30 +79,28 @@ typedef struct s_simulation
 	pthread_mutex_t	*forks;
 }	t_simulation;
 
-enum
+enum e_philo_state
 {
 	EATING,
 	THINKING,
 	SLEEPING,
-	DEAD
 };
 
-enum e_status
+typedef enum e_status
 {
 	SUCCESS,
 	E_MALLOC_FAILED,
 	E_INVALID_ARG_COUNT,
-	E_INVALID_ARG_TYPE
-};
+	E_INVALID_ARG_TYPE,
+	E_THREAD_FAILED
+} t_status;
 
-enum e_status		parse_args(int argc, char **argv, t_simulation *args);
-enum e_status	validate_rules(t_rules *rules, char **args);
-void	handle_error(enum e_status status);
-bool	invalid_args(t_rules *rules, char **args);
-enum e_status	init_philos(t_philosopher **philos, t_simulation *args);
-bool		init_mutexes(t_philosopher **philo, pthread_mutex_t **forks,
-				int count);
-// void		init_hands(t_philosopher *philo, t_simulation *sim);
+t_status	parse_args(int argc, char **argv, t_simulation *args);
+t_status	validate_rules(t_simulation *simulation, char **args);
+void		handle_errors(t_status status);
+t_status	init_philos(t_philosopher **philos, t_simulation *args);
+t_status	init_mutexes(t_philosopher **philo, pthread_mutex_t **forks,
+					int count);
 void		init_hands(t_philosopher **philo, pthread_mutex_t **forks, uint16_t count);
 
 // Timing
@@ -120,7 +118,7 @@ void		philo_sleeping(t_philosopher *philo);
 void		philo_thinking(t_philosopher *philo);
 
 // Main thread
-void	start_simulation(t_philosopher *philos, uint16_t philo_count, uint64_t start_time);
+t_status	start_simulation(t_philosopher *philos, uint16_t philo_count, uint64_t start_time);
 void		monitor_philos(t_simulation *sim);
 bool		philo_starved(t_philosopher *philo);
 bool		check_philos_death(uint16_t philo_count, t_philosopher *philos);
@@ -131,6 +129,4 @@ bool		check_eat_count(uint16_t philo_count, t_philosopher *philos);
 // Utils
 void		color_printf(const char *color, uint64_t start_time, uint16_t id,
 				const char *message);
-bool	invalid_arg(char *original, char *reconverted);
-
 #endif
