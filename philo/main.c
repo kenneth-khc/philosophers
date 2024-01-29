@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/28 23:55:57 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 17:25:39 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,28 @@
 int	main(int argc, char **argv)
 {
 	t_simulation	simulation;
+	enum e_status	status;
 
-	if (!parse_args(argc, argv, &simulation))
+	status = parse_args(argc, argv, &simulation);
+	if (status != SUCCESS)
+	{
+		handle_error(status);
 		return (1);
-	// simulation.philos = malloc(sizeof(*simulation.philos) * simulation.philo_count);
-	// simulation.forks = malloc(sizeof(*simulation.forks) * simulation.philo_count);
-	if (!init_philos(&simulation.philos, &simulation))
+	}
+	status = validate_rules(&simulation.rules, argv);
+	if (status != SUCCESS)
+	{
+		handle_error(status);
 		return (1);
+	}
+	status = init_philos(&simulation.philos, &simulation);
+	if (status != SUCCESS)
+	{
+		handle_error(status);
+		return (1);
+	}
 	if (!init_mutexes(&simulation.philos, &simulation.forks, simulation.philo_count))
 		return (1);
-	// int i = 0;
 	start_simulation(simulation.philos, simulation.philo_count, simulation.start_time);
 	monitor_philos(&simulation);
 }

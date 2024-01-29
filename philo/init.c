@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/28 23:49:29 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 17:22:12 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,12 @@ bool	init_mutexes(t_philosopher **philos, pthread_mutex_t **forks, int count)
 	return (true);
 }
 
-void init_hands(t_philosopher **philos, pthread_mutex_t **forks, uint16_t count)
+void	init_hands(t_philosopher **philos, 
+	pthread_mutex_t **forks, uint16_t count)
 {
 	int				i;
 	t_philosopher	*philo;
-	
+
 	i = 0;
 	while (i < count)
 	{
@@ -63,9 +64,9 @@ void init_hands(t_philosopher **philos, pthread_mutex_t **forks, uint16_t count)
 	}
 }
 
-bool	init_philos(t_philosopher **philos, t_simulation *args)
+enum e_status init_philos(t_philosopher **philos, t_simulation *args)
 {
-	int	i;
+	int				i;
 	t_philosopher	*philo;
 
 	i = 0;
@@ -88,20 +89,4 @@ bool	init_philos(t_philosopher **philos, t_simulation *args)
 		i++;
 	}
 	return (true);
-}
-
-void	init_hands1(t_philosopher *philo, t_simulation *sim)
-{
-	if (philo->id == 1)
-	{
-		philo->left_fork = &sim->forks[sim->philo_count - 1];
-		philo->right_fork = &sim->forks[0];
-		if (philo->right_fork == philo->left_fork)
-			philo->left_fork = NULL;
-	}
-	else
-	{
-		philo->left_fork = &sim->forks[philo->id - 2];
-		philo->right_fork = &sim->forks[philo->id - 1];
-	}
 }
