@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/28 16:51:23 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 23:22:21 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,22 +25,19 @@ void	print_simulation_struct(t_simulation *args)
 	printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n");
 }
 
-bool	parse_args(int argc, char **argv, t_simulation *args)
+t_status	parse_args(int argc, char **argv, t_simulation *args)
 {
+	t_status	status;
+
 	if (argc == 5 || argc == 6)
 	{
 		set_simulation_rules(args, argv);
-		return (true);
+		status = SUCCESS;
 	}
 	else
-	{
-		printf("Invalid number of arguments.\n");
-		printf("Usage: <number_of_philosophers> "
-			"<time_to_die> <time_to_eat> <time_to_sleep> "
-			"[number_of_times_each_philosopher_must_eat]\n");
-		return (false);
-	}
+		status = E_INVALID_ARG_COUNT;
 	print_simulation_struct(args);
+	return (status);
 }
 
 static void	set_simulation_rules(t_simulation *sim, char **args)
@@ -48,6 +45,7 @@ static void	set_simulation_rules(t_simulation *sim, char **args)
 	struct timeval	time_now;
 
 	sim->philo_count = philo_atoi(args[1]);
+	sim->rules.philo_count = philo_atoi(args[1]);
 	sim->rules.time_to_die = philo_atoi(args[2]);
 	sim->rules.time_to_eat = philo_atoi(args[3]);
 	sim->rules.time_to_sleep = philo_atoi(args[4]);

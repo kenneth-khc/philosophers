@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 05:28:08 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/28 22:20:31 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/29 23:19:55 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,14 @@ bool	check_eat_count(uint16_t philo_count, t_philosopher *philos)
 	}
 	kill_all_philos(philo_count, philos);
 	return (false);
+}
+
+bool	philo_is_alive(t_philosopher *philo)
+{
+	bool	alive;
+
+	pthread_mutex_lock(&philo->alive_mutex);
+	alive = philo->alive;
+	pthread_mutex_unlock(&philo->alive_mutex);
+	return (alive);
 }
