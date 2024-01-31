@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 23:57:56 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 23:18:37 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/30 21:20:39 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ void	monitor_philos(t_simulation *sim)
 		pthread_join((sim->philos)[i].thread, NULL);
 		i++;
 	}
-	color_printf(GREEN, sim->start_time, 0, "Simulation ended");
+	// color_printf(GREEN, sim->start_time, 0, "Simulation ended");
+	color_printf(GREEN, get_time_since(sim->start_time), 0, "Simulation ended");
 }
 
 bool	check_philos_death(uint16_t philo_count, t_philosopher *philos)
@@ -51,8 +52,12 @@ bool	check_philos_death(uint16_t philo_count, t_philosopher *philos)
 			kill_philo(philo);
 			simulation_running = false;
 			kill_all_philos(philo_count, philos);
-			color_printf(BOLD_RED, philos->start_time, dead_philo->id, "died");
-			color_printf(RED, philos->start_time, 0, "Simulation ending");
+			color_printf(BOLD_RED, 
+				get_time_since(philos->start_time), dead_philo->id, "died");
+			color_printf(RED, 
+				get_time_since(philos->start_time), 0, "Simulation ending");
+			// color_printf(BOLD_RED, philos->start_time, dead_philo->id, "died");
+			// color_printf(RED, philos->start_time, 0, "Simulation ending");
 			break ;
 		}
 		i++;

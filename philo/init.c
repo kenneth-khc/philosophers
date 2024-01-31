@@ -6,39 +6,39 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 23:22:21 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/01 07:25:42 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-t_status	init_mutexes(t_philosopher **philos,
-pthread_mutex_t **forks, int count)
-{
-	int				i;
-	t_philosopher	*philo;
+// t_status	init_mutexes1(t_philosopher **philos,
+// t_mutex **forks, int count)
+// {
+// 	int				i;
+// 	t_philosopher	*philo;
 
-	*forks = malloc(sizeof(**forks) * count);
-	if (!*forks)
-		return (E_MALLOC_FAILED);
-	i = 0;
-	while (i < count)
-	{
-		philo = &(*philos)[i];
-		pthread_mutex_init(&philo->state_mutex, NULL);
-		pthread_mutex_init(&philo->alive_mutex, NULL);
-		pthread_mutex_init(&philo->time_mutex, NULL);
-		pthread_mutex_init(&philo->eat_count_mutex, NULL);
-		pthread_mutex_init(&(*forks)[i], NULL);
-		i++;
-	}
-	init_hands(philos, forks, count);
-	return (SUCCESS);
-}
+// 	*forks = malloc(sizeof(**forks) * count);
+// 	if (!*forks)
+// 		return (E_MALLOC_FAILED);
+// 	i = 0;
+// 	while (i < count)
+// 	{
+// 		philo = &(*philos)[i];
+// 		pthread_mutex_init(&philo->state_mutex, NULL);
+// 		pthread_mutex_init(&philo->alive_mutex, NULL);
+// 		pthread_mutex_init(&philo->time_mutex, NULL);
+// 		pthread_mutex_init(&philo->eat_count_mutex, NULL);
+// 		pthread_mutex_init(&(*forks)[i], NULL);
+// 		i++;
+// 	}
+// 	init_hands(philos, forks, count);
+// 	return (SUCCESS);
+// }
 
-void	init_hands(t_philosopher **philos,
-pthread_mutex_t **forks, uint16_t count)
-{
+void	init_hands1(t_philosopher **philos,
+t_mutex **forks, uint16_t count)
+{//
 	int				i;
 	t_philosopher	*philo;
 
@@ -57,6 +57,32 @@ pthread_mutex_t **forks, uint16_t count)
 		{
 			philo->left_fork = &(*forks)[philo->id - 2];
 			philo->right_fork = &(*forks)[philo->id - 1];
+		}
+		i++;
+	}
+}
+
+void	init_hands(t_philosopher **philos, t_fork *forks, uint16_t count)
+{
+	int				i;
+	t_philosopher	*philo;
+
+	i = 0;
+	while (i < count)
+	{
+		philo = &(*philos)[i];
+		if (philo->id == 1)
+		{
+			philo->left = &forks[count - 1];
+			philo->right = &forks[0];
+			if (philo->right == philo->left)
+				// philo->left = NULL;
+				philo->alive = false;
+		}
+		else
+		{
+			philo->left = &forks[philo->id - 2];
+			philo->right = &forks[philo->id - 1];
 		}
 		i++;
 	}

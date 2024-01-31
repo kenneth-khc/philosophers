@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 16:41:55 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 23:40:36 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/01/31 23:48:54 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,15 @@ t_status	validate_rules(t_simulation *simulation, char **args)
 
 	rules = &simulation->rules;
 	status = philo_itoa(simulation->philo_count, args[1]);
-	if (status != SUCCESS)
-		return (status);
-	status = philo_itoa(rules->time_to_die, args[2]);
-	if (status != SUCCESS)
-		return (status);
-	status = philo_itoa(rules->time_to_eat, args[3]);
-	if (status != SUCCESS)
-		return (status);
-	status = philo_itoa(rules->time_to_sleep, args[4]);
-	if (status != SUCCESS)
-		return (status);
-	if (rules->min_eat != -1)
-		status = philo_itoa(rules->min_eat, args[5]);
+	if (status == SUCCESS)
+		status = philo_itoa(rules->time_to_die, args[2]);
+	if (status == SUCCESS)
+		status = philo_itoa(rules->time_to_eat, args[3]);
+	if (status == SUCCESS)
+		status = philo_itoa(rules->time_to_sleep, args[4]);
+	if (status == SUCCESS)
+		if (rules->min_eat != -1)
+			status = philo_itoa(rules->min_eat, args[5]);
 	return (status);
 }
 
