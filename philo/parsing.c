@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/29 23:22:21 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/01 08:19:08 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ static void	set_simulation_rules(t_simulation *sim, char **args)
 	struct timeval	time_now;
 
 	sim->philo_count = philo_atoi(args[1]);
-	sim->rules.philo_count = philo_atoi(args[1]);
 	sim->rules.time_to_die = philo_atoi(args[2]);
 	sim->rules.time_to_eat = philo_atoi(args[3]);
 	sim->rules.time_to_sleep = philo_atoi(args[4]);

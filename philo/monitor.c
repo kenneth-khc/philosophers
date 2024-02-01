@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 23:57:56 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/30 21:20:39 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/01 08:50:41 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ void	monitor_philos(t_simulation *sim)
 		pthread_join((sim->philos)[i].thread, NULL);
 		i++;
 	}
-	// color_printf(GREEN, sim->start_time, 0, "Simulation ended");
 	color_printf(GREEN, get_time_since(sim->start_time), 0, "Simulation ended");
 }
 
@@ -52,12 +51,10 @@ bool	check_philos_death(uint16_t philo_count, t_philosopher *philos)
 			kill_philo(philo);
 			simulation_running = false;
 			kill_all_philos(philo_count, philos);
-			color_printf(BOLD_RED, 
+			color_printf(BOLD_RED,
 				get_time_since(philos->start_time), dead_philo->id, "died");
-			color_printf(RED, 
+			color_printf(RED,
 				get_time_since(philos->start_time), 0, "Simulation ending");
-			// color_printf(BOLD_RED, philos->start_time, dead_philo->id, "died");
-			// color_printf(RED, philos->start_time, 0, "Simulation ending");
 			break ;
 		}
 		i++;
@@ -91,9 +88,9 @@ bool	philo_starved(t_philosopher *philo)
 	uint64_t	last_meal_time;
 	uint64_t	time_to_die;
 
-	pthread_mutex_lock(&philo->time_mutex);
+	pthread_mutex_lock(&philo->meal_time_mutex);
 	last_meal_time = philo->last_meal_time;
-	time_to_die = philo->rules.time_to_die;
-	pthread_mutex_unlock(&philo->time_mutex);
+	pthread_mutex_unlock(&philo->meal_time_mutex);
+	time_to_die = philo->rules->time_to_die;
 	return (get_time_since(last_meal_time) > time_to_die);
 }

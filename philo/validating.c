@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/29 16:41:55 by kecheong          #+#    #+#             */
-/*   Updated: 2024/01/31 23:48:54 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/01 08:37:37 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,12 +52,8 @@ static t_status	philo_itoa(int num, char *original)
 		num /= 10;
 	}
 	if (invalid_arg(res, original))
-	{
-		free(res);
-		return (E_INVALID_ARG_TYPE);
-	}
-	free(res);
-	return (SUCCESS);
+		return (free(res), E_INVALID_ARG_TYPE);
+	return (free(res), SUCCESS);
 }
 
 static uint8_t	get_num_len(int num)
@@ -87,27 +83,27 @@ static bool	invalid_arg(char *original, char *reconverted)
 	return (false);
 }
 
-#define MALLOC_FAILED_ERR "Malloc failed\n"
-#define INVALID_ARG_COUNT_ERR "Invalid number of arguments.\n"
+#define MALLOC_FAILED "Malloc failed\n"
+#define INVALID_ARG_COUNT "Invalid number of arguments.\n"
 #define USAGE "Usage: <number_of_philosophers> <time_to_die> <time_to_eat>"
 #define USAGE2 "<time_to_sleep> [number_of_times_each_philosopher_must_eat]\n"
-#define ARG_TYPE_ERR "Invalid argument type.\nArguments should be numbers.\n"
-#define THREAD_FAILED_ERR "Thread failed\n"
+#define ARG_TYPE "Invalid argument type.\nArguments should be numbers.\n"
+#define THREAD_FAILED "Thread failed\n"
 
 void	handle_errors(t_status status)
 {
 	if (status == E_MALLOC_FAILED)
-		write(STDERR_FILENO, MALLOC_FAILED_ERR, sizeof(MALLOC_FAILED_ERR) - 1);
+		write(STDERR_FILENO, MALLOC_FAILED, sizeof(MALLOC_FAILED) - 1);
 	else if (status == E_INVALID_ARG_COUNT)
 	{
 		write(STDERR_FILENO,
-			INVALID_ARG_COUNT_ERR, sizeof(INVALID_ARG_COUNT_ERR) - 1);
+			INVALID_ARG_COUNT, sizeof(INVALID_ARG_COUNT) - 1);
 		write(STDERR_FILENO, USAGE, sizeof(USAGE) - 1);
 		write(STDERR_FILENO, USAGE2, sizeof(USAGE2) - 1);
 	}
 	else if (status == E_INVALID_ARG_TYPE)
 		write(STDERR_FILENO,
-			ARG_TYPE_ERR, sizeof(ARG_TYPE_ERR) - 1);
+			ARG_TYPE, sizeof(ARG_TYPE) - 1);
 	else if (status == E_THREAD_FAILED)
-		write(STDERR_FILENO, THREAD_FAILED_ERR, sizeof(THREAD_FAILED_ERR) - 1);
+		write(STDERR_FILENO, THREAD_FAILED, sizeof(THREAD_FAILED) - 1);
 }

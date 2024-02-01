@@ -5,3 +5,7 @@ a.out
 .vscode/
 .DS_Store
 *.sh
+test.c
+*.py
+*.txt
+*.log
