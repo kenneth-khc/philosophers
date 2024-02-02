@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/01 08:19:08 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/02 18:12:19 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ t_status	parse_args(int argc, char **argv, t_simulation *args)
 	}
 	else
 		status = E_INVALID_ARG_COUNT;
-	print_simulation_struct(args);
+	// print_simulation_struct(args);
 	return (status);
 }
 
@@ -54,7 +54,6 @@ static void	set_simulation_rules(t_simulation *sim, char **args)
 		sim->rules.min_eat = -1;
 	gettimeofday(&time_now, NULL);
 	sim->start_time = (time_now.tv_sec * 1000) + (time_now.tv_usec / 1000);
-	printf(">>> START %llu\n", sim->start_time);
 }
 
 static int	philo_atoi(char *str)

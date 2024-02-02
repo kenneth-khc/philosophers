@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/01 08:51:06 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/02 21:12:22 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,13 @@ t_status	init_philos(t_philosopher **philos, t_simulation *args)
 		philo->start_time = args->start_time;
 		philo->last_meal_time = args->start_time;
 		philo->eat_count = 0;
+		philo->should_log = &args->running;
 		i++;
 	}
 	return (SUCCESS);
 }
 
-t_status	init_muts(t_simulation *sim,
+t_status	init_mutexes(t_simulation *sim,
 	t_philosopher **philos, uint16_t philo_count)
 {
 	uint16_t		i;
@@ -54,6 +55,7 @@ t_status	init_muts(t_simulation *sim,
 		pthread_mutex_init(&sim->fork_arr[i].mutex, NULL);
 		i++;
 	}
+	pthread_mutex_init(&sim->mutex, NULL);
 	init_hands(philos, sim->fork_arr, philo_count);
 	return (SUCCESS);
 }

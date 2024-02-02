@@ -8,4 +8,4 @@ a.out
 test.c
 *.py
 *.txt
-*.log
+*.logg
