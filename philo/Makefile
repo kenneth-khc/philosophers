@@ -1,7 +1,7 @@
 NAME = philo
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g3
 # FSAN = -fsanitize=thread -g3
-# # FSAN = -fsanitize=address -g3
+FSAN = -fsanitize=address -g3
 ARGS = 10 300 100 100 10
 
 SOURCES = main.c parsing.c init.c time.c monitor.c philosophize.c utils.c validating.c

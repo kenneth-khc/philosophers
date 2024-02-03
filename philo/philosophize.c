@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/02 20:03:20 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/03 22:40:43 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,15 @@
 
 void	*philosophize(void *arg)
 {
-	t_philosopher	*philo;
+	t_philo	*philo;
 
-	philo = (t_philosopher *)(arg);
+	philo = (t_philo *)(arg);
+	while (simulation_is_running(philo->sim) == false)
+		;
+	philo->start_time = get_current_time();
+	pthread_mutex_lock(&philo->meal_time_mutex);
+	philo->last_meal_time = get_current_time();
+	pthread_mutex_unlock(&philo->meal_time_mutex);
 	if (philo->id % 2 == 0)
 		ft_usleep(50);
 	while (philo_is_alive(philo))
@@ -30,27 +36,26 @@ void	*philosophize(void *arg)
 	return (NULL);
 }
 
-void	pick_up_fork(t_philosopher *philo, t_fork *fork)
+void	pick_up_fork(t_philo *philo, t_fork *fork)
 {
 	if (!philo_is_alive(philo))
 		return ;
 	pthread_mutex_lock(&fork->mutex);
-	color_printf(BLUE,
-		get_time_since(philo->start_time), philo->id, "has taken a fork");
+	log_message(BLUE,
+		get_time_since(philo->start_time), philo, "has taken a fork");
 }
 
-void	philo_eating(t_philosopher *philo)
+void	philo_eating(t_philo *philo)
 {
 	if (!philo_is_alive(philo))
 		return ;
-	uint64_t	time_1 = get_current_time();
+	uint64_t	meal_time;
+	meal_time = get_current_time();
 	pthread_mutex_lock(&philo->meal_time_mutex);
-	philo->last_meal_time = get_current_time();
-	if (time_1 != philo->last_meal_time)
-		printf("nope\n");
+	philo->last_meal_time = meal_time;
 	pthread_mutex_unlock(&philo->meal_time_mutex);
-	color_printf(MAGENTA,
-		get_time_since(philo->start_time), philo->id, "is eating");
+	log_message(MAGENTA,
+		get_time_since(philo->start_time), philo, "is eating");
 	pthread_mutex_lock(&philo->eat_count_mutex);
 	philo->eat_count++;
 	pthread_mutex_unlock(&philo->eat_count_mutex);
@@ -59,19 +64,19 @@ void	philo_eating(t_philosopher *philo)
 	pthread_mutex_unlock(&philo->right->mutex);
 }
 
-void	philo_sleeping(t_philosopher *philo)
+void	philo_sleeping(t_philo *philo)
 {
 	if (!philo_is_alive(philo))
 		return ;
-	color_printf(CYAN,
-		get_time_since(philo->start_time), philo->id, "is sleeping");
+	log_message(CYAN,
+		get_time_since(philo->start_time), philo, "is sleeping");
 	ft_usleep(philo->rules->time_to_sleep);
 }
 
-void	philo_thinking(t_philosopher *philo)
+void	philo_thinking(t_philo *philo)
 {
 	if (!philo_is_alive(philo))
 		return ;
-	color_printf(YELLOW,
-		get_time_since(philo->start_time), philo->id, "is thinking");
+	log_message(YELLOW,
+		get_time_since(philo->start_time), philo, "is thinking");
 }

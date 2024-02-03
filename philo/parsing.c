@@ -6,24 +6,20 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/02 18:12:19 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/03 22:17:10 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	philo_atoi(char *str);
-static void	set_simulation_rules(t_simulation *sim, char **args);
+static t_status
+validate_args(char **argv);
 
-void	print_simulation_struct(t_simulation *args)
-{
-	printf("philo_count:   %d\n", args->philo_count);
-	printf("time_to_die:   %llu\n", args->rules.time_to_die);
-	printf("time_to_eat:   %llu\n", args->rules.time_to_eat);
-	printf("time_to_sleep: %llu\n", args->rules.time_to_sleep);
-	printf("min_eat:	 %lld\n", args->rules.min_eat);
-	printf("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n");
-}
+static void		
+set_simulation_rules(t_simulation *sim, char **args);
+
+static uint64_t	
+philo_atoi(char *str);
 
 t_status	parse_args(int argc, char **argv, t_simulation *args)
 {
@@ -31,34 +27,51 @@ t_status	parse_args(int argc, char **argv, t_simulation *args)
 
 	if (argc == 5 || argc == 6)
 	{
-		set_simulation_rules(args, argv);
-		status = SUCCESS;
+		status = validate_args(argv + 1);
+		if (status == SUCCESS)
+			set_simulation_rules(args, argv);
 	}
 	else
 		status = E_INVALID_ARG_COUNT;
-	// print_simulation_struct(args);
 	return (status);
 }
 
-static void	set_simulation_rules(t_simulation *sim, char **args)
+static t_status	validate_args(char **argv)
 {
-	struct timeval	time_now;
+	uint8_t	i;
 
-	sim->philo_count = philo_atoi(args[1]);
-	sim->rules.time_to_die = philo_atoi(args[2]);
-	sim->rules.time_to_eat = philo_atoi(args[3]);
-	sim->rules.time_to_sleep = philo_atoi(args[4]);
-	if (args[5])
-		sim->rules.min_eat = philo_atoi(args[5]);
-	else
-		sim->rules.min_eat = -1;
-	gettimeofday(&time_now, NULL);
-	sim->start_time = (time_now.tv_sec * 1000) + (time_now.tv_usec / 1000);
+	while (*argv != NULL)
+	{
+		i = 0;
+		while ((*argv)[i] != '\0')
+		{
+			if (**argv < '0' && **argv > '9')
+				return (E_INVALID_ARG_TYPE);
+			i++;
+		}
+		argv++;
+	}
+	return (SUCCESS);
 }
 
-static int	philo_atoi(char *str)
+static void	set_simulation_rules(t_simulation *sim, char **argv)
 {
-	int	num;
+	t_rules	*rules;
+
+	rules = &sim->rules;
+	sim->philo_count = philo_atoi(argv[1]);
+	rules->time_to_die = philo_atoi(argv[2]);
+	rules->time_to_eat = philo_atoi(argv[3]);
+	rules->time_to_sleep = philo_atoi(argv[4]);
+	if (argv[5])
+		rules->min_eat = philo_atoi(argv[5]);
+	else
+		rules->min_eat = -1;
+}
+
+static uint64_t	philo_atoi(char *str)
+{
+	uint64_t	num;
 
 	num = 0;
 	while (*str)
@@ -68,4 +81,39 @@ static int	philo_atoi(char *str)
 		str++;
 	}
 	return (num);
+}
+
+#define ARG_COUNT_ERR "Invalid number of args\n"
+#define USAGE "Usage: <number_of_philosophers> <time_to_die> <time_to_eat>"
+#define USAGE2 "<time_to_sleep> [number_of_times_each_philosopher_must_eat]\n"
+#define ARG_TYPE_ERR "Invalid args.\nArgs should be positive numbers\n"
+#define MALLOC_ERR "Malloc failed\n"
+#define THREAD_ERR "Thread failed\n"
+
+void	handle_errors(t_status status)
+{
+	if (status == E_INVALID_ARG_COUNT)
+	{
+		write(STDERR_FILENO,
+			ARG_COUNT_ERR, sizeof(ARG_COUNT_ERR) - 1
+			);
+		write(STDERR_FILENO,
+			USAGE, sizeof(USAGE) - 1
+			);
+		write(STDERR_FILENO,
+			USAGE2, sizeof(USAGE2) - 1
+			);
+	}
+	else if (status == E_INVALID_ARG_TYPE)
+		write(STDERR_FILENO,
+			ARG_TYPE_ERR, sizeof(ARG_TYPE_ERR) - 1
+			);
+	else if (status == E_MALLOC_FAILED)
+		write(STDERR_FILENO,
+			MALLOC_ERR, sizeof(MALLOC_ERR) - 1
+			);
+	else if (status == E_THREAD_FAILED)
+		write(STDERR_FILENO,
+			THREAD_ERR, sizeof(THREAD_ERR) - 1
+			);
 }
