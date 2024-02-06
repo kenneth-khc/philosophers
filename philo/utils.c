@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 05:28:08 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/03 21:31:24 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/06 18:13:25 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	log_message(const char *color, uint64_t timestamp,
 			color, timestamp, message, COLOR_RESET);
 		return ;	
 	}
-	if (philo->should_log == false)
+	if (*philo->should_log == false)
 		return ;
 	else
 	{

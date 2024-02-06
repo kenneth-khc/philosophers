@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/03 22:17:10 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/06 18:05:12 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static t_status	validate_args(char **argv)
 		i = 0;
 		while ((*argv)[i] != '\0')
 		{
-			if (**argv < '0' && **argv > '9')
+			if (!((*argv)[i] >= '0' && (*argv)[i] <= '9'))
 				return (E_INVALID_ARG_TYPE);
 			i++;
 		}
@@ -86,12 +86,14 @@ static uint64_t	philo_atoi(char *str)
 #define ARG_COUNT_ERR "Invalid number of args\n"
 #define USAGE "Usage: <number_of_philosophers> <time_to_die> <time_to_eat>"
 #define USAGE2 "<time_to_sleep> [number_of_times_each_philosopher_must_eat]\n"
-#define ARG_TYPE_ERR "Invalid args.\nArgs should be positive numbers\n"
+#define ARG_TYPE_ERR "Invalid args\nArgs should be positive numbers\n"
 #define MALLOC_ERR "Malloc failed\n"
 #define THREAD_ERR "Thread failed\n"
 
 void	handle_errors(t_status status)
 {
+	if (status == SUCCESS)
+		return ;
 	if (status == E_INVALID_ARG_COUNT)
 	{
 		write(STDERR_FILENO,

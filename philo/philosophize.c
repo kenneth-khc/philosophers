@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/03 22:40:43 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/06 18:14:27 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	*philosophize(void *arg)
 		;
 	philo->start_time = get_current_time();
 	pthread_mutex_lock(&philo->meal_time_mutex);
-	philo->last_meal_time = get_current_time();
+	philo->last_meal_time = philo->start_time;
 	pthread_mutex_unlock(&philo->meal_time_mutex);
 	if (philo->id % 2 == 0)
 		ft_usleep(50);
@@ -47,9 +47,10 @@ void	pick_up_fork(t_philo *philo, t_fork *fork)
 
 void	philo_eating(t_philo *philo)
 {
+	uint64_t	meal_time;
+
 	if (!philo_is_alive(philo))
 		return ;
-	uint64_t	meal_time;
 	meal_time = get_current_time();
 	pthread_mutex_lock(&philo->meal_time_mutex);
 	philo->last_meal_time = meal_time;

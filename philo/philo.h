@@ -118,7 +118,7 @@ void		philo_thinking(t_philo *philo);
 // t_status	start_simulation(t_philo *philos,
 // 				uint16_t philo_count, uint64_t start_time);
 t_status	start_simulation(t_simulation *simulation);
-void		monitor_philos(t_simulation *sim);
+t_status	monitor_philos(t_simulation *sim);
 bool		philo_starved(t_philo *philo);
 void		kill_philo(t_philo *philo);
 void		kill_all_philos(uint16_t philo_count, t_philo *philos);

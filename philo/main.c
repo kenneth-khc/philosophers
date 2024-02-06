@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/03 22:33:39 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/06 18:05:23 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,11 @@ int	main(int argc, char **argv)
 		status = initialize_simulation(&sim);
 	if (status == SUCCESS)
 		status = start_simulation(&sim);
-	if (status != SUCCESS)
-	{
-		handle_errors(status);
-		return (status);
-	}
-	monitor_philos(&sim);
+	if (status == SUCCESS)
+		status = monitor_philos(&sim);
+	handle_errors(status);
 	// system("leaks -q philo");
-	return (SUCCESS);
+	return (status);
 }
 
 t_status	start_simulation(t_simulation *simulation)
