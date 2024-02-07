@@ -6,20 +6,20 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 05:28:08 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/06 18:13:25 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/06 18:23:23 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 void	log_message(const char *color, uint64_t timestamp,
- t_philo *philo, const char *message)
+t_philo *philo, const char *message)
 {
 	if (philo == NULL)
 	{
 		printf("%s%llu %s%s\n",
 			color, timestamp, message, COLOR_RESET);
-		return ;	
+		return ;
 	}
 	if (*philo->should_log == false)
 		return ;
@@ -43,7 +43,7 @@ bool	philo_is_alive(t_philo *philo)
 bool	simulation_is_running(t_simulation *simulation)
 {
 	bool	running;
-	
+
 	pthread_mutex_lock(&simulation->mutex);
 	running = simulation->running;
 	pthread_mutex_unlock(&simulation->mutex);
@@ -59,8 +59,8 @@ void	kill_philo(t_philo *philo)
 
 void	kill_all_philos(uint16_t philo_count, t_philo *philos)
 {
-	int				i;
-	t_philo	*philo;
+	uint16_t	i;
+	t_philo		*philo;
 
 	i = 0;
 	while (i < philo_count)
@@ -70,4 +70,3 @@ void	kill_all_philos(uint16_t philo_count, t_philo *philos)
 		i++;
 	}
 }
-

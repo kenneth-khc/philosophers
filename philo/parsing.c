@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/06 18:05:12 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/07 23:27:59 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,12 @@ static void	set_simulation_rules(t_simulation *sim, char **argv)
 	rules->time_to_eat = philo_atoi(argv[3]);
 	rules->time_to_sleep = philo_atoi(argv[4]);
 	if (argv[5])
-		rules->min_eat = philo_atoi(argv[5]);
+	{
+		rules->must_eat = true;
+		rules->must_eat_count = philo_atoi(argv[5]);
+	}
 	else
-		rules->min_eat = -1;
+		rules->must_eat = false;
 }
 
 static uint64_t	philo_atoi(char *str)
@@ -97,25 +100,19 @@ void	handle_errors(t_status status)
 	if (status == E_INVALID_ARG_COUNT)
 	{
 		write(STDERR_FILENO,
-			ARG_COUNT_ERR, sizeof(ARG_COUNT_ERR) - 1
-			);
+			ARG_COUNT_ERR, sizeof(ARG_COUNT_ERR) - 1);
 		write(STDERR_FILENO,
-			USAGE, sizeof(USAGE) - 1
-			);
+			USAGE, sizeof(USAGE) - 1);
 		write(STDERR_FILENO,
-			USAGE2, sizeof(USAGE2) - 1
-			);
+			USAGE2, sizeof(USAGE2) - 1);
 	}
 	else if (status == E_INVALID_ARG_TYPE)
 		write(STDERR_FILENO,
-			ARG_TYPE_ERR, sizeof(ARG_TYPE_ERR) - 1
-			);
+			ARG_TYPE_ERR, sizeof(ARG_TYPE_ERR) - 1);
 	else if (status == E_MALLOC_FAILED)
 		write(STDERR_FILENO,
-			MALLOC_ERR, sizeof(MALLOC_ERR) - 1
-			);
+			MALLOC_ERR, sizeof(MALLOC_ERR) - 1);
 	else if (status == E_THREAD_FAILED)
 		write(STDERR_FILENO,
-			THREAD_ERR, sizeof(THREAD_ERR) - 1
-			);
+			THREAD_ERR, sizeof(THREAD_ERR) - 1);
 }

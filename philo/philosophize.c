@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/06 18:14:27 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/08 00:10:20 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,9 @@ void	*philosophize(void *arg)
 
 	philo = (t_philo *)(arg);
 	while (simulation_is_running(philo->sim) == false)
+	{
 		;
-	philo->start_time = get_current_time();
-	pthread_mutex_lock(&philo->meal_time_mutex);
-	philo->last_meal_time = philo->start_time;
-	pthread_mutex_unlock(&philo->meal_time_mutex);
+	}
 	if (philo->id % 2 == 0)
 		ft_usleep(50);
 	while (philo_is_alive(philo))
@@ -57,10 +55,10 @@ void	philo_eating(t_philo *philo)
 	pthread_mutex_unlock(&philo->meal_time_mutex);
 	log_message(MAGENTA,
 		get_time_since(philo->start_time), philo, "is eating");
+	ft_usleep(philo->rules->time_to_eat);
 	pthread_mutex_lock(&philo->eat_count_mutex);
 	philo->eat_count++;
 	pthread_mutex_unlock(&philo->eat_count_mutex);
-	ft_usleep(philo->rules->time_to_eat);
 	pthread_mutex_unlock(&philo->left->mutex);
 	pthread_mutex_unlock(&philo->right->mutex);
 }

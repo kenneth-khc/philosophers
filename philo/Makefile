@@ -2,13 +2,23 @@ NAME = philo
 CFLAGS = -Wall -Werror -Wextra -g3
 # FSAN = -fsanitize=thread -g3
 FSAN = -fsanitize=address -g3
-ARGS = 10 300 100 100 10
+
+ARGS = $(PC) $(TTD) $(TTE) $(TTS) $(EC)
+PC = 4 # Philosopher count
+TTD = 410 # Time for philosopher to die
+TTE = 200 # Time for philosopher to eat
+TTS = 200 # Time for philosopher to sleep
+EC = 10	 # Eat count. Number of times philosopher should at least eat
+log = ../tests/output.log
 
 SOURCES = main.c parsing.c init.c time.c monitor.c philosophize.c utils.c 
 
 a:
 	cc $(SOURCES) $(CFLAGS) $(FSAN) -o $(NAME)
-	./$(NAME) $(ARGS) > output.log && cat output.log
+	./$(NAME) $(ARGS) | tee $(log)
+
+check:
+	../tests/check.sh
 
 test:
 	cc $(test.c) $(FSAN) -o a.out && ./a.out

@@ -1,4 +1,4 @@
-// /* ************************************************************************** */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/02 19:25:23 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/07 23:33:46 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ typedef struct s_rules
 	uint64_t	time_to_die;	// milliseconds
 	uint64_t	time_to_eat;	// milliseconds
 	uint64_t	time_to_sleep;	// milliseconds
-	int64_t		min_eat;
+	bool		must_eat;
+	uint64_t	must_eat_count;
 }	t_rules;
 
 typedef pthread_mutex_t	t_mutex;
@@ -114,20 +115,24 @@ void		philo_eating(t_philo *philo);
 void		philo_sleeping(t_philo *philo);
 void		philo_thinking(t_philo *philo);
 
-// Main thread
-// t_status	start_simulation(t_philo *philos,
-// 				uint16_t philo_count, uint64_t start_time);
+// Monitoring philos
 t_status	start_simulation(t_simulation *simulation);
 t_status	monitor_philos(t_simulation *sim);
+void		check_death(uint16_t count,
+				t_philo *philos,
+				bool *running,
+				t_mutex *mutex);
+void		*check_count(void *arg);
 bool		philo_starved(t_philo *philo);
 void		kill_philo(t_philo *philo);
 void		kill_all_philos(uint16_t philo_count, t_philo *philos);
 
 // Utils
-void		log_message(const char *color, uint64_t time_stamp, t_philo *philo, 
+void		log_message(const char *color, uint64_t time_stamp, t_philo *philo,
 				const char *message);
 void		ft_usleep(uint64_t target_time);
 bool		simulation_is_running(t_simulation *simulation);
-void		kill_philos(t_philo *starved_philo, t_philo *philos, uint16_t count);
+void		kill_philos(t_philo *starved, t_philo *philos, uint16_t count);
+void		clean_up(t_simulation *simulation);
 
 #endif
