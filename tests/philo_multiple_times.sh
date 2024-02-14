@@ -8,7 +8,8 @@ fi
 # eg. ./philo_multi 4 410 200 200
 
 philo="./philo"
-command="$philo $@"
+cp $philo test_philo
+command="./test_philo $@"
 timeout=30 # How long the simulation should run for before getting terminated
 log_dir="../tests/logs/"
 file_name="test"
@@ -25,7 +26,7 @@ for i in {1..100}
 do
 log_file="${log_dir}${file_name}${i}${extension}"
 ( eval $command > $log_file ) & pid=$!
-( sleep $timeout && kill $pid && pkill philo ) 2>/dev/null & watcher=$! # kills all processes named philo
+( sleep $timeout && kill $pid && pkill test_philo ) 2>/dev/null & watcher=$! # kills all processes named philo
 wait $pid 2>/dev/null && pkill -HUP -P $watcher
 sleep 1
 died=$(cat $log_file | grep "died" | wc -l | tr -d ' ')

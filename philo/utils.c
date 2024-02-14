@@ -6,28 +6,38 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 05:28:08 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/06 18:23:23 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/17 18:05:59 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	log_message(const char *color, uint64_t timestamp,
-t_philo *philo, const char *message)
+void	log_philo_action(const char *color, t_philo *philo, const char *msg)
 {
-	if (philo == NULL)
+	uint64_t	timestamp;
+
+	if (simulation_is_running(philo->simulation) && philo_is_alive(philo))
 	{
-		printf("%s%llu %s%s\n",
-			color, timestamp, message, COLOR_RESET);
-		return ;
-	}
-	if (*philo->should_log == false)
-		return ;
-	else
-	{
+		timestamp = get_time_since(philo->simulation->start_time);
 		printf("%llu %s%d %s%s\n",
-			timestamp, color, philo->id, message, COLOR_RESET);
+			timestamp, color, philo->id, msg, COLOR_RESET);
 	}
+}
+
+void	log_philo_death(const char *color, t_simulation *sim, uint16_t id)
+{
+	uint64_t	timestamp;
+
+	pthread_mutex_lock(&sim->print_lock);
+	if (simulation_is_running(sim))
+	{
+		pthread_mutex_lock(&sim->mutex);
+		sim->running = false;
+		pthread_mutex_unlock(&sim->mutex);
+		timestamp = get_time_since(sim->start_time);
+		printf("%llu %s%d %s%s\n", timestamp, color, id, "died", COLOR_RESET);
+	}
+	pthread_mutex_unlock(&sim->print_lock);
 }
 
 bool	philo_is_alive(t_philo *philo)

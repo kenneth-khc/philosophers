@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/26 23:57:56 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/07 23:48:25 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/17 23:11:03 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,10 @@ t_status	monitor_philos(t_simulation *sim)
 	pthread_t	count_checker;
 	uint16_t	i;
 
-	if (sim->rules.must_eat)
+	if (sim->rules.eat_limit)
 		if (pthread_create(&count_checker, NULL, check_count, sim) != 0)
 			return (E_THREAD_FAILED);
-	while (simulation_is_running(sim))
-		check_death(sim->philo_count, sim->philos, &sim->running, &sim->mutex);
-	if (sim->rules.must_eat)
+	if (sim->rules.eat_limit)
 		pthread_join(count_checker, NULL);
 	i = 0;
 	while (i < sim->philo_count)
@@ -30,45 +28,8 @@ t_status	monitor_philos(t_simulation *sim)
 		pthread_join(sim->philos[i].thread, NULL);
 		i++;
 	}
-	log_message(GREEN,
-		get_time_since(sim->start_time), NULL, "Simulation ended");
+	log_message(GREEN, sim, "Simulation ended");
 	return (SUCCESS);
-}
-
-void	check_death(uint16_t philo_count, t_philo *philos, bool *running,
-		t_mutex	*mutex)
-{
-	uint16_t	i;
-	t_philo		*philo;
-
-	i = 0;
-	while (i < philo_count)
-	{
-		philo = &philos[i];
-		if (philo_starved(philo))
-		{
-			pthread_mutex_lock(mutex);
-			kill_philos(philo, philos, philo_count);
-			*running = false;
-			pthread_mutex_unlock(mutex);
-			break ;
-		}
-		i++;
-	}
-}
-
-bool	philo_starved(t_philo *philo)
-{
-	uint64_t	last_meal_time;
-	uint64_t	time_to_die;
-	bool		starved;
-
-	pthread_mutex_lock(&philo->meal_time_mutex);
-	last_meal_time = philo->last_meal_time;
-	pthread_mutex_unlock(&philo->meal_time_mutex);
-	time_to_die = philo->rules->time_to_die;
-	starved = get_time_since(last_meal_time) > time_to_die;
-	return (starved);
 }
 
 void	kill_philos(t_philo *starved_philo, t_philo *philos, uint16_t count)
@@ -76,10 +37,7 @@ void	kill_philos(t_philo *starved_philo, t_philo *philos, uint16_t count)
 	uint16_t	i;
 
 	kill_philo(starved_philo);
-	log_message(BOLD_RED,
-		get_time_since(philos->start_time), starved_philo, "died");
-	log_message(RED,
-		get_time_since(philos->start_time), NULL, "Simulation ending");
+	// log_philo_death(RED, philos->simulation, starved_philo->id);
 	i = 0;
 	while (i < count)
 	{
@@ -92,29 +50,70 @@ void	*check_count(void *arg)
 {
 	t_simulation	*simulation;
 	t_philo			*philo;
+	uint64_t		target_meals;
 	uint16_t		i;
 
 	i = 0;
-	simulation = (t_simulation *) arg;
+	simulation = (t_simulation *)arg;
+	target_meals = (uint64_t)simulation->rules.required_meals;
 	while (simulation_is_running(simulation) && i < simulation->philo_count)
 	{
 		philo = &simulation->philos[i];
 		pthread_mutex_lock(&philo->eat_count_mutex);
-		if (philo->eat_count < (uint64_t)simulation->rules.must_eat_count)
-		{
-			pthread_mutex_unlock(&philo->eat_count_mutex);
-			continue ;
-		}
+		if (philo->eat_count >= target_meals)
+			i++;
 		pthread_mutex_unlock(&philo->eat_count_mutex);
-		i++;
 	}
-	pthread_mutex_lock(&simulation->mutex);
-	simulation->running = false;
-	printf("%llu ", get_time_since(simulation->start_time));
 	if (i == simulation->philo_count)
-		printf("All philos achieved eat count of %llu\n",
-			simulation->rules.must_eat_count);
-	kill_all_philos(simulation->philo_count, simulation->philos);
-	pthread_mutex_unlock(&simulation->mutex);
+		log_and_terminate(simulation);
 	return (NULL);
 }
+
+void	log_and_terminate(t_simulation *sim)
+{
+	pthread_mutex_lock(&sim->mutex);
+	sim->running = false;
+	printf("%llu All philos ate at least %llu times\n",
+			get_time_since(sim->start_time),
+			sim->rules.required_meals);
+	kill_all_philos(sim->philo_count, sim->philos);
+	pthread_mutex_unlock(&sim->mutex);
+}
+
+// void	check_death(t_philo *philos, t_simulation *sim)
+// {
+// 	uint16_t	i;
+// 	t_philo		*philo;
+
+// 	i = 0;
+// 	while (i < sim->philo_count)
+// 	{
+// 		philo = &philos[i];
+// 		// if (philo_starved(philo))
+// 		if (philo->alive == false)
+// 		{
+// 			pthread_mutex_lock(&sim->mutex);
+// 			kill_philos(philo, philos, sim->philo_count);
+// 			sim->running = false;
+// 			pthread_mutex_unlock(&sim->mutex);
+// 			break ;
+// 		}
+// 		i++;
+// 		if (i == sim->philo_count)
+// 			i = 0;
+// 	}
+// }
+
+// bool	philo_starved(t_philo *philo)
+// {
+// 	uint64_t	last_meal_time;
+// 	uint64_t	time_to_die;
+// 	bool		starved;
+
+// 	pthread_mutex_lock(&philo->meal_time_mutex);
+// 	last_meal_time = philo->last_meal_time;
+// 	pthread_mutex_unlock(&philo->meal_time_mutex);
+// 	time_to_die = philo->rules->time_to_die;
+// 	starved = get_time_since(last_meal_time) > time_to_die;
+// 	return (starved);
+// }
