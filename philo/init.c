@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/17 23:12:48 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/20 20:20:24 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,11 @@ t_status	initialize_simulation(t_simulation *sim)
 
 	sim->running = false;
 	status = init_philos(sim);
+	sim->philos_satisfied = 0;
 	if (status == SUCCESS)
-	{
 		status = init_mutexes(sim);
-		if (status == SUCCESS)
-			assign_forks(sim->philos, sim->forks, sim->philo_count);
-	}
+	if (status == SUCCESS)
+		assign_forks(sim->philos, sim->forks, sim->philo_count);
 	return (status);
 }
 
@@ -72,8 +71,8 @@ static t_status	init_mutexes(t_simulation *sim)
 	{
 		philo = &sim->philos[i];
 		pthread_mutex_init(&philo->alive_mutex, NULL);
-		pthread_mutex_init(&philo->meal_time_mutex, NULL);
 		pthread_mutex_init(&philo->eat_count_mutex, NULL);
+		pthread_mutex_init(&philo->death_time_mutex, NULL);
 		fork = &sim->forks[i];
 		pthread_mutex_init(&fork->mutex, NULL);
 		i++;

@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/17 22:33:07 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/19 21:33:44 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	main(int argc, char **argv)
 	if (status == SUCCESS)
 		status = start_simulation(&sim);
 	if (status == SUCCESS)
-		status = monitor_philos(&sim);
+		status = await_philos(&sim);
 	if (status == SUCCESS)
 		clean_up(&sim);
 	handle_errors(status);
@@ -45,8 +45,6 @@ void	clean_up(t_simulation *simulation)
 		int errcode;
 		if ((errcode = pthread_mutex_destroy(&philo->alive_mutex)) != 0)
 			printf("MUTEX1 %d Errcode: %d\n", i, errcode);
-		if ((errcode = pthread_mutex_destroy(&philo->meal_time_mutex)) != 0)
-			printf("MUTEX2 %d Errcode: %d\n", i, errcode);
 		if ((errcode = pthread_mutex_destroy(&philo->eat_count_mutex)) != 0)
 			printf("MUTEX3 %d Errcode: %d\n", i, errcode);
 		if ((errcode = pthread_mutex_destroy(&fork->mutex)) != 0)
@@ -87,5 +85,7 @@ void	handle_errors(t_status status)
 	else if (status == E_THREAD_FAILED)
 		write(STDERR_FILENO,
 			THREAD_ERR, sizeof(THREAD_ERR) - 1);
+	else
+		write(STDERR_FILENO, "Error\n", 6);
 	return ;
 }

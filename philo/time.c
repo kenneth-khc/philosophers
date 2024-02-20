@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 10:50:30 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/14 16:58:17 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/20 23:35:57 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,16 @@ void	sleep_ms(uint64_t milliseconds_to_sleep)
 	time_spent_sleeping = 0;
 	while (time_spent_sleeping < milliseconds_to_sleep)
 	{
-		usleep(50);
+		usleep(999);
 		time_spent_sleeping = get_time_since(start_time);
 	}
 	return ;
+}
+
+void	sleep_to_death(t_philo *philo, t_simulation *sim, uint64_t start_time)
+{
+	sleep_ms(philo->death_time - start_time);
+	pthread_mutex_lock(&sim->mutex);
+	kill_philos(sim->philos, sim->philo_count);
+	pthread_mutex_unlock(&sim->mutex);
 }

@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 05:28:08 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/17 18:05:59 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/20 17:02:24 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,22 @@ void	kill_all_philos(uint16_t philo_count, t_philo *philos)
 	{
 		philo = &philos[i];
 		kill_philo(philo);
+		i++;
+	}
+}
+
+void	kill_philos(t_philo *philos, uint16_t philo_count)
+{
+	t_philo		*philo;
+	uint16_t	i;
+
+	i = 0;
+	while (i < philo_count)
+	{
+		philo = &philos[i];
+		pthread_mutex_lock(&philo->alive_mutex);
+		philo->alive = false;
+		pthread_mutex_unlock(&philo->alive_mutex);
 		i++;
 	}
 }
