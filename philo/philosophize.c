@@ -6,76 +6,88 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/08 00:10:20 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/22 00:10:39 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+static void
+pick_up_fork(t_philo *philo, t_fork *fork);
+
+static void
+philo_eating(t_philo *philo);
+
+static void
+philo_sleeping(t_philo *philo);
+
+static void
+philo_thinking(t_philo *philo);
+
+/* Eat, sleep, think, ~code~, repeat. */
 void	*philosophize(void *arg)
 {
-	t_philo	*philo;
+	t_philo		*philo;
+	pthread_t	monitor;
 
 	philo = (t_philo *)(arg);
-	while (simulation_is_running(philo->sim) == false)
+	if (pthread_create(&monitor, NULL, philo_monitor, philo) != 0)
+		return (NULL);
+	pthread_mutex_lock(&philo->simulation->mutex);
+	pthread_mutex_unlock(&philo->simulation->mutex);
+	if (philo->id % 2 != 0)
 	{
-		;
+		log_philo_action(YELLOW, philo, "is thinking");
+		sleep_ms(philo->simulation->rules.time_to_eat / 2);
 	}
-	if (philo->id % 2 == 0)
-		ft_usleep(50);
 	while (philo_is_alive(philo))
 	{
-		pick_up_fork(philo, philo->left);
-		pick_up_fork(philo, philo->right);
+		pick_up_fork(philo, philo->left_fork);
+		pick_up_fork(philo, philo->right_fork);
 		philo_eating(philo);
 		philo_sleeping(philo);
 		philo_thinking(philo);
 	}
+	if (pthread_join(monitor, NULL) != 0)
+		return (NULL);
 	return (NULL);
 }
 
-void	pick_up_fork(t_philo *philo, t_fork *fork)
+static void	pick_up_fork(t_philo *philo, t_fork *fork)
 {
-	if (!philo_is_alive(philo))
-		return ;
 	pthread_mutex_lock(&fork->mutex);
-	log_message(BLUE,
-		get_time_since(philo->start_time), philo, "has taken a fork");
+	log_philo_action(BLUE, philo, "has taken a fork");
 }
 
-void	philo_eating(t_philo *philo)
+/**
+ * Calculate philo's starvation time, increment its eat count
+ * and put down forks once done eating
+ */
+static void	philo_eating(t_philo *philo)
 {
-	uint64_t	meal_time;
+	uint64_t	start_time;
 
-	if (!philo_is_alive(philo))
-		return ;
-	meal_time = get_current_time();
-	pthread_mutex_lock(&philo->meal_time_mutex);
-	philo->last_meal_time = meal_time;
-	pthread_mutex_unlock(&philo->meal_time_mutex);
-	log_message(MAGENTA,
-		get_time_since(philo->start_time), philo, "is eating");
-	ft_usleep(philo->rules->time_to_eat);
+	start_time = get_current_time();
+	philo->last_meal_time = start_time;
+	pthread_mutex_lock(&philo->death_time_mutex);
+	philo->death_time = start_time + philo->rules->time_to_die;
+	pthread_mutex_unlock(&philo->death_time_mutex);
+	log_philo_action(CYAN, philo, "is eating");
+	sleep_ms(philo->rules->time_to_eat);
 	pthread_mutex_lock(&philo->eat_count_mutex);
 	philo->eat_count++;
 	pthread_mutex_unlock(&philo->eat_count_mutex);
-	pthread_mutex_unlock(&philo->left->mutex);
-	pthread_mutex_unlock(&philo->right->mutex);
+	pthread_mutex_unlock(&philo->left_fork->mutex);
+	pthread_mutex_unlock(&philo->right_fork->mutex);
 }
 
-void	philo_sleeping(t_philo *philo)
+static void	philo_sleeping(t_philo *philo)
 {
-	if (!philo_is_alive(philo))
-		return ;
-	log_message(CYAN,
-		get_time_since(philo->start_time), philo, "is sleeping");
-	ft_usleep(philo->rules->time_to_sleep);
+	log_philo_action(MAGENTA, philo, "is sleeping");
+	sleep_ms(philo->rules->time_to_sleep);
 }
 
-void	philo_thinking(t_philo *philo)
+static void	philo_thinking(t_philo *philo)
 {
-	if (!philo_is_alive(philo))
-		return ;
-	log_message(YELLOW,
-		get_time_since(philo->start_time), philo, "is thinking");
+	log_philo_action(BLACK, philo, "is thinking");
 }
