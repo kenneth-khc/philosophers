@@ -13,6 +13,6 @@ fi
 start=1
 for i in $(seq $start $philo_count)
 do
-eat_count=$(cat $output_file | grep "$i is eating" | wc -l | tr -d ' ')
+eat_count=$(cat $output_file | grep " $i is eating" | wc -l | tr -d ' ')
 echo "Philo $i ate $eat_count times"
 done

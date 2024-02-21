@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/20 20:20:24 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/21 21:32:23 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,13 @@ init_mutexes(t_simulation *sim);
 static void	
 assign_forks(t_philo *philos, t_fork *forks, uint16_t count);
 
+/* Initialize the simulation to be run but keep the threads paused */
 t_status	initialize_simulation(t_simulation *sim)
 {
 	t_status	status;
 
 	sim->running = false;
 	status = init_philos(sim);
-	sim->philos_satisfied = 0;
 	if (status == SUCCESS)
 		status = init_mutexes(sim);
 	if (status == SUCCESS)
@@ -35,6 +35,7 @@ t_status	initialize_simulation(t_simulation *sim)
 	return (status);
 }
 
+/* Initializes philos and sets their id and state to alive */
 static t_status	init_philos(t_simulation *sim)
 {
 	t_philo		*philo;
@@ -57,6 +58,7 @@ static t_status	init_philos(t_simulation *sim)
 	return (SUCCESS);
 }
 
+/* Initializes mutexes to protect critical sections between threads */
 static t_status	init_mutexes(t_simulation *sim)
 {
 	t_philo		*philo;
@@ -78,10 +80,14 @@ static t_status	init_mutexes(t_simulation *sim)
 		i++;
 	}
 	pthread_mutex_init(&sim->mutex, NULL);
-	pthread_mutex_init(&sim->print_lock, NULL);
+	pthread_mutex_init(&sim->print_mutex, NULL);
 	return (SUCCESS);
 }
 
+/**
+ * Assign left and right forks to a philo.
+ * Philo n will have Fork n in its left hand and Fork n+1 in its right
+ */
 static void	assign_forks(t_philo *philos, t_fork *forks, uint16_t count)
 {
 	t_philo		*philo;
@@ -93,6 +99,8 @@ static void	assign_forks(t_philo *philos, t_fork *forks, uint16_t count)
 		philo = &philos[i];
 		philo->left_fork = &forks[i];
 		philo->right_fork = &forks[(i + 1) % count];
+		if (philo->left_fork == philo->right_fork)
+			philo->alive = false;
 		i++;
 	}
 }

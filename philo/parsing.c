@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/13 16:17:37 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/21 21:32:10 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@ set_simulation_rules(t_simulation *sim, char **args);
 static uint64_t	
 philo_atoi(char *str);
 
+/**
+ * Parse arguments. Only accept positive numbers in the format of 
+ * <philo_count> <time_to_die> <time_to_eat> <time_to_sleep> with an
+ * optional <times_to_eat>
+ */
 t_status	parse_args(int argc, char **argv, t_simulation *args)
 {
 	t_status	status;
@@ -36,6 +41,7 @@ t_status	parse_args(int argc, char **argv, t_simulation *args)
 	return (status);
 }
 
+/* Invalidate arguments if non number found */
 static t_status	validate_args(char **argv)
 {
 	uint8_t	i;
@@ -54,6 +60,7 @@ static t_status	validate_args(char **argv)
 	return (SUCCESS);
 }
 
+/* Set rules for philos to follow as according to arguments input */
 static void	set_simulation_rules(t_simulation *simulation, char **argv)
 {
 	t_rules	*rules;
