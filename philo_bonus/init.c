@@ -6,46 +6,35 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/22 09:08:57 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 12:16:01 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static t_status
+static void
 init_philos(t_simulation *sim);
 
-// static t_status
-// init_mutexes(t_simulation *sim);
-
-static t_status init_semaphores(t_simulation *sim);
-
-// static void	
-// assign_forks(t_philo *philos, t_fork *forks, uint16_t count);
+static void
+init_semaphores(t_simulation *sim);
 
 /* Initialize the simulation to be run but keep the threads paused */
-t_status	initialize_simulation(t_simulation *sim)
+void	init_simulation(t_simulation *sim)
 {
-	t_status	status;
-
 	sim->running = true;
-	status = init_philos(sim);
-	if (status == SUCCESS)
-		status = init_semaphores(sim);
-	// if (status == SUCCESS)
-		// assign_forks(sim->philos, sim->forks, sim->philo_count);
-	return (status);
+	init_philos(sim);
+	init_semaphores(sim);
 }
 
 /* Initializes philos and sets their id and state to alive */
-static t_status	init_philos(t_simulation *sim)
+static void	init_philos(t_simulation *sim)
 {
 	t_philo		*philo;
 	uint16_t	i;
 
 	sim->philos = malloc(sizeof(t_philo) * sim->philo_count);
 	if (sim->philos == NULL)
-		return (E_MALLOC_FAILED);
+		error_and_exit(E_MALLOC_FAILED);
 	i = 0;
 	while (i < sim->philo_count)
 	{
@@ -59,10 +48,9 @@ static t_status	init_philos(t_simulation *sim)
 	}
 	if (sim->philo_count == 1)
 		philo->alive = false;
-	return (SUCCESS);
 }
 
-static t_status init_semaphores(t_simulation *sim)
+static void init_semaphores(t_simulation *sim)
 {
 	(void)sim;
 	sem_unlink("FORKS");
@@ -73,8 +61,8 @@ static t_status init_semaphores(t_simulation *sim)
 	sim->printer = sem_open("PRINTER", O_CREAT, 0666, 1);
 	sem_unlink("EAT_COUNTER");
 	sim->eat_counter = sem_open("EAT_COUNTER", O_CREAT, 0666, 0);
-
-	return (SUCCESS);
+	sem_unlink("TERMINATOR");
+	sim->terminator = sem_open("TERMINATOR", O_CREAT, 0666, 0);
 }
 
 /**

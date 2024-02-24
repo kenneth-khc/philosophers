@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/22 09:08:29 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 14:37:16 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,34 +26,7 @@
 
 #include <errno.h>
 #include <string.h>
-# if 0
-/* ANSI color codes */
-#  define BLACK "\e[0;30m"
-#  define MAGENTA "\e[0;31m"
-#  define GREEN "\e[0;32m"
-#  define YELLOW "\e[0;33m"
-#  define BLUE "\e[0;34m"
-#  define RED "\e[0;35m"
-#  define BOLD_RED "\e[1;31m"
-#  define CYAN "\e[0;36m"
-#  define WHITE "\e[0;37m"
-#  define COLOR_RESET "\e[0m"
-#  define PADDING 10
-
-# else /* toggle off colors for visualization */
-#  define BLACK ""
-#  define MAGENTA ""
-#  define GREEN ""
-#  define YELLOW ""
-#  define BLUE ""
-#  define RED ""
-#  define BOLD_RED ""
-#  define CYAN ""
-#  define WHITE ""
-#  define COLOR_RESET ""
-#  define PADDING 0
-
-# endif
+#include "color.h"
 
 /* Error codes */
 typedef enum e_status
@@ -76,20 +49,7 @@ typedef struct s_rules
 	uint64_t	required_meals;
 }	t_rules;
 
-typedef struct s_simulation	t_simulation;
-typedef struct s_philo
-{
-	t_simulation	*simulation;
-	t_rules			*rules;
-	uint16_t		id;
-	pthread_t		thread;
-	bool			alive;
-	uint64_t		eat_count;
-	uint64_t		last_meal_time;
-	uint64_t		death_time;
-	sem_t			*forks;
-}	t_philo;
-
+typedef struct s_philo t_philo;
 typedef struct s_simulation
 {
 	uint16_t	philo_count;
@@ -103,12 +63,27 @@ typedef struct s_simulation
 	pid_t		*pids;
 	sem_t		*eat_counter;
 	// sem_t		*blocker;
+	sem_t		*terminator;
 }	t_simulation;
+
+typedef struct s_philo
+{
+	t_simulation	*simulation;
+	t_rules			*rules;
+	uint16_t		id;
+	pthread_t		thread;
+	bool			alive;
+	uint64_t		eat_count;
+	uint64_t		last_meal_time;
+	uint64_t		death_time;
+	sem_t			*forks;
+}	t_philo;
+
 
 /* Argument parsing and initialization */
 
-t_status	parse_args(int argc, char **argv, t_simulation *args);
-t_status	initialize_simulation(t_simulation *simulation);
+void		parse_args(int argc, char **argv, t_simulation *args);
+void		init_simulation(t_simulation *simulation);
 void		handle_errors(t_status status);
 
 /* Timing */
@@ -119,14 +94,14 @@ void		sleep_ms(uint64_t milliseconds_to_sleep);
 
 /* Philo routines and helper functions for monitoring */
 
-t_status	start_simulation(t_simulation *simulation);
+void		start_simulation(t_simulation *simulation);
 bool		simulation_is_running(t_simulation *simulation);
 void		*philosophize(void *arg);
 void		*philo_monitor(void	*arg);
 bool		philo_is_alive(t_philo *philo);
 void		*check_count(void *arg);
 bool		philo_starved(t_philo *philo);
-t_status	await_philos(t_simulation *simulation);
+void		await_philos(t_simulation *simulation);
 void		kill_philo(t_philo *philo);
 void		kill_philos(t_simulation *simulation);
 void		turn_off_simulation(t_simulation *simulation);
@@ -140,5 +115,7 @@ void		log_philo_action(const char *color, t_philo *philo,
 				const char *msg);
 void		log_philo_death(const char *color, t_simulation *simulation,
 				uint16_t id);
+void	error_and_exit(t_status	errcode);
+
 
 #endif

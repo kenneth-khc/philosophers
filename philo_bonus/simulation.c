@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 16:21:37 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/22 09:17:57 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 17:16:23 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 // unpause_threads(t_simulation *sim);
 
 /* Create threads to run each philosopher's routine */
-t_status	start_simulation(t_simulation *sim)
+void	start_simulation(t_simulation *sim)
 {
 	uint16_t	i;
 	pid_t		id;
@@ -24,6 +24,7 @@ t_status	start_simulation(t_simulation *sim)
 	i = 0;
 	sim->start_time = get_current_time();
 	sim->pids = malloc(sizeof(pid_t) * sim->philo_count);
+	//
 	while (i < sim->philo_count)
 	{
 		sim->philos[i].last_meal_time = sim->start_time;
@@ -32,15 +33,12 @@ t_status	start_simulation(t_simulation *sim)
 		if (id == -1)
 			exit(EXIT_FAILURE);
 		else if (id == 0)
+		{
 			philosophize(&sim->philos[i]);
+		}
 		sim->pids[i] = id;
 		i++;
 	}
-	// pid_t waited = waitpid(-1, &wstatus, 0);
-	// printf("%d\n", WEXITSTATUS(wstatus));
-	// printf("%d\n", wstatus);
-	// printf(">>> %d\n", waited);
-	return (SUCCESS);
 }
 
 /* Log general simulation messages */
@@ -48,11 +46,11 @@ void	log_message(const char *color, t_simulation *sim, const char *msg)
 {
 	uint32_t	timestamp;
 
-	// sem_wait(sim->printer);
+	sem_wait(sim->printer);
 	timestamp = get_time_since(sim->start_time);
 	printf("%*u%s %s%s\n", PADDING,
 		timestamp, color, msg, COLOR_RESET);
-	// sem_post(sim->printer);
+	sem_post(sim->printer);
 }
 
 /* Log a philo's action */
@@ -64,11 +62,11 @@ void	log_philo_action(const char *color, t_philo *philo, const char *msg)
 	sim = philo->simulation;
 	if (simulation_is_running(sim) && philo_is_alive(philo))
 	{
-		// sem_wait(sim->printer);
+		sem_wait(sim->printer);
 		timestamp = get_time_since(sim->start_time);
 		printf("%*u%s %d %s%s\n", PADDING,
 			timestamp, color, philo->id, msg, COLOR_RESET);
-		// sem_post(sim->printer);
+		sem_post(sim->printer);
 	}
 }
 
@@ -79,7 +77,7 @@ void	log_philo_death(const char *color, t_simulation *sim, uint16_t id)
 
 	if (simulation_is_running(sim))
 	{
-		// sem_wait(sim->printer);
+		sem_wait(sim->printer);
 		turn_off_simulation(sim);
 		timestamp = get_time_since(sim->start_time);
 		printf("%*u%s %d %s%s\n", PADDING,

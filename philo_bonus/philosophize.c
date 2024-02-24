@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/22 09:29:41 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 16:58:53 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,6 @@ void	*philosophize(void *arg)
 		philo_eating(philo);
 		philo_sleeping(philo);
 		philo_thinking(philo);
-		fflush(stdout);
 	}
 	if (pthread_join(monitor, NULL) != 0)
 		return (NULL);
@@ -79,11 +78,11 @@ static void	philo_eating(t_philo *philo)
 	sleep_ms(philo->rules->time_to_eat);
 	if (philo->rules->eat_limit)
 	{
-		philo->eat_count++;
 		if (philo->eat_count == philo->rules->required_meals)
 		{
 			sem_post(philo->simulation->eat_counter);
 		}
+		philo->eat_count++;
 	}
 	sem_post(philo->forks);
 	sem_post(philo->forks);

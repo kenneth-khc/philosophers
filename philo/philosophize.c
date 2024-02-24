@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/22 00:10:39 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 10:38:31 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	*philosophize(void *arg)
 		return (NULL);
 	pthread_mutex_lock(&philo->simulation->mutex);
 	pthread_mutex_unlock(&philo->simulation->mutex);
-	if (philo->id % 2 != 0)
+	if (philo->id % 2 == 0)
 	{
 		log_philo_action(YELLOW, philo, "is thinking");
 		sleep_ms(philo->simulation->rules.time_to_eat / 2);
@@ -48,8 +48,7 @@ void	*philosophize(void *arg)
 		philo_sleeping(philo);
 		philo_thinking(philo);
 	}
-	if (pthread_join(monitor, NULL) != 0)
-		return (NULL);
+	pthread_join(monitor, NULL);
 	return (NULL);
 }
 

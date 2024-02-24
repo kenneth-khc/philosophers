@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/22 00:08:27 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 14:42:37 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,34 +20,7 @@
 # include <pthread.h>
 # include <stdbool.h>
 
-# if 1
-/* ANSI color codes */
-#  define BLACK "\e[0;30m"
-#  define MAGENTA "\e[0;31m"
-#  define GREEN "\e[0;32m"
-#  define YELLOW "\e[0;33m"
-#  define BLUE "\e[0;34m"
-#  define RED "\e[0;35m"
-#  define BOLD_RED "\e[1;31m"
-#  define CYAN "\e[0;36m"
-#  define WHITE "\e[0;37m"
-#  define COLOR_RESET "\e[0m"
-#  define PADDING 10
-
-# else /* toggle off colors for visualization */
-#  define BLACK ""
-#  define MAGENTA ""
-#  define GREEN ""
-#  define YELLOW ""
-#  define BLUE ""
-#  define RED ""
-#  define BOLD_RED ""
-#  define CYAN ""
-#  define WHITE ""
-#  define COLOR_RESET ""
-#  define PADDING 0
-
-# endif
+# include "color.h"
 
 /* Error codes */
 typedef enum e_status
@@ -111,7 +84,7 @@ typedef struct s_simulation
 /* Argument parsing and initialization */
 
 t_status	parse_args(int argc, char **argv, t_simulation *args);
-t_status	initialize_simulation(t_simulation *simulation);
+t_status	init_simulation(t_simulation *simulation);
 void		handle_errors(t_status status);
 
 /* Timing */

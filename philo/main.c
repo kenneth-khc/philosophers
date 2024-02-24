@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/21 23:46:26 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 11:52:05 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	main(int argc, char **argv)
 
 	status = parse_args(argc, argv, &sim);
 	if (status == SUCCESS)
-		status = initialize_simulation(&sim);
+		status = init_simulation(&sim);
 	if (status == SUCCESS)
 		status = start_simulation(&sim);
 	if (status == SUCCESS)

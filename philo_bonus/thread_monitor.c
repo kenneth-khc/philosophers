@@ -6,13 +6,13 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 17:38:41 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/22 08:14:42 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 16:36:36 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-/* A secondary thread to monitor whether it's philo_bonus.has starved or not */
+/* A secondary thread to monitor whether it's philo has starved or not */
 void	*philo_monitor(void	*arg)
 {
 	t_philo			*philo;
@@ -30,9 +30,8 @@ void	*philo_monitor(void	*arg)
 		sleep_ms(1);
 		if (philo_starved(philo))
 		{
-			kill_philo(philo);
 			log_philo_death(BOLD_RED, sim, philo->id);
-			kill_philos(sim);
+			exit(EXIT_SUCCESS);
 		}
 	}
 	return (NULL);

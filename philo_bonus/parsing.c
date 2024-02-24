@@ -6,13 +6,13 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:20:45 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/21 21:32:10 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 12:03:30 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static t_status
+static void
 validate_args(char **argv);
 
 static void		
@@ -26,23 +26,19 @@ philo_atoi(char *str);
  * <philo_count> <time_to_die> <time_to_eat> <time_to_sleep> with an
  * optional <times_to_eat>
  */
-t_status	parse_args(int argc, char **argv, t_simulation *args)
+void	parse_args(int argc, char **argv, t_simulation *args)
 {
-	t_status	status;
-
 	if (argc == 5 || argc == 6)
 	{
-		status = validate_args(argv + 1);
-		if (status == SUCCESS)
-			set_simulation_rules(args, argv + 1);
+		validate_args(argv + 1);
+		set_simulation_rules(args, argv + 1);
 	}
 	else
-		status = E_INVALID_ARG_COUNT;
-	return (status);
+		error_and_exit(E_INVALID_ARG_COUNT);
 }
 
 /* Invalidate arguments if non number found */
-static t_status	validate_args(char **argv)
+static void	validate_args(char **argv)
 {
 	uint8_t	i;
 
@@ -52,12 +48,11 @@ static t_status	validate_args(char **argv)
 		while ((*argv)[i] != '\0')
 		{
 			if (!((*argv)[i] >= '0' && (*argv)[i] <= '9'))
-				return (E_INVALID_ARG_TYPE);
+				error_and_exit(E_INVALID_ARG_TYPE);
 			i++;
 		}
 		argv++;
 	}
-	return (SUCCESS);
 }
 
 /* Set rules for philos to follow as according to arguments input */
