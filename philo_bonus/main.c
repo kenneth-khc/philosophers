@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/24 17:30:51 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/24 21:34:39 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ int	main(int argc, char **argv)
 	t_simulation	sim;
 
 	parse_args(argc, argv, &sim);
-	init_simulation(&sim);
+	// init_simulation(&sim);
+	init_semaphores(&sim);
 	start_simulation(&sim);
 	await_philos(&sim);
 	clean_up(&sim);
@@ -33,20 +34,16 @@ void	await_philos(t_simulation *sim)
 	{
 		if (pthread_create(&count_checker, NULL, check_count, sim) != 0)
 			error_and_exit(E_THREAD_FAILED);
-		if (pthread_join(count_checker, NULL) != 0)
-			error_and_exit(E_JOIN_FAILED);
+		pthread_detach(count_checker);
 	}
 	i = 0;
 	waitpid(-1, NULL, 0);
-	// sem_wait(sim->master_lock);
 	while (i < sim->philo_count)
 	{
 		kill(sim->pids[i], SIGTERM);
+		// printf("Killing %d\n", sim->pids[i]);
 		i++;
 	}
-	// sem_post(sim->master_lock);
-	exit(0);
-	sim->running = false;
 	log_message(GREEN, sim, "Simulation ended");
 }
 
@@ -54,7 +51,6 @@ void	await_philos(t_simulation *sim)
 void	*check_count(void *arg)
 {
 	t_simulation	*simulation;
-	uint16_t		i;
 	uint16_t		philos_satisfied;
 
 	simulation = (t_simulation *)arg;
@@ -68,12 +64,6 @@ void	*check_count(void *arg)
 	printf("%*u%s All philos ate at least %llu times%s\n", PADDING,
 		get_time_since(simulation->start_time), GREEN,
 		simulation->rules.required_meals, COLOR_RESET);
-	i = 0;
-	// while (i < simulation->philo_count)
-	// {
-	// 	kill(simulation->pids[i], SIGTERM);
-	// 	i++;
-	// }
 	kill(simulation->pids[0], SIGTERM);
 	return (NULL);
 }
@@ -81,16 +71,22 @@ void	*check_count(void *arg)
 /* Clean up arrays and mutexes */
 void	clean_up(t_simulation *simulation)
 {
-	t_philo		*philo;
-	uint16_t	i;
+	// t_philo		*philo;
+	// uint16_t	i;
 
-	i = 0;
-	while (i < simulation->philo_count)
-	{
-		philo = &simulation->philos[i];
-		i++;
-	}
-	free(simulation->philos);
+	// i = 0;
+	// while (i < simulation->philo_count)
+	// {
+	// 	philo = &simulation->philos[i];
+	// 	i++;
+	// }
+	// free(simulation->philos);
+	printf("PID: %d\n", getpid());
+	sem_close(simulation->terminator);
+	sem_close(simulation->eat_counter);
+	sem_close(simulation->printer);
+	sem_close(simulation->forks);
+	free(simulation->pids);
 }
 
 #define ARG_COUNT_ERR "Invalid number of args\n"

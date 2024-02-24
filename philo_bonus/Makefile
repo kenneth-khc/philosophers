@@ -17,7 +17,7 @@ parsing.c \
 init.c time.c \
 philosophize.c \
 simulation.c \
-thread_monitor.c \
+philo_monitor.c \
 simulation_utils.c \
 
 a:

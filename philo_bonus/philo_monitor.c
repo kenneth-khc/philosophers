@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   thread_monitor.c                                   :+:      :+:    :+:   */
+/*   philo_monitor.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 17:38:41 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/23 16:36:36 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/24 21:09:17 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,18 +51,18 @@ void	kill_philo(t_philo *philo)
 	philo->alive = false;
 }
 
-void	kill_philos(t_simulation *sim)
-{
-	t_philo		*philo;
-	uint16_t	i;
-	uint16_t	count;
+// void	kill_philos(t_simulation *sim)
+// {
+// 	t_philo		*philo;
+// 	uint16_t	i;
+// 	uint16_t	count;
 
-	i = 0;
-	count = sim->philo_count;
-	while (i < count)
-	{
-		philo = &sim->philos[i];
-		kill_philo(philo);
-		i++;
-	}
-}
+// 	i = 0;
+// 	count = sim->philo_count;
+// 	while (i < count)
+// 	{
+// 		philo = &sim->philos[i];
+// 		kill_philo(philo);
+// 		i++;
+// 	}
+// }

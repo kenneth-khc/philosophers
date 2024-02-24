@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/23 16:58:53 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/24 20:59:50 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	*philosophize(void *arg)
 	
 	philo->forks = philo->simulation->forks;
 	if (pthread_create(&monitor, NULL, philo_monitor, philo) != 0)
-		return (NULL);
+		error_and_exit(E_THREAD_FAILED);
 	if (philo->id % 2 != 0)
 	{
 		log_philo_action(YELLOW, philo, "is thinking");
@@ -51,14 +51,14 @@ void	*philosophize(void *arg)
 		philo_thinking(philo);
 	}
 	if (pthread_join(monitor, NULL) != 0)
-		return (NULL);
+		error_and_exit(E_JOIN_FAILED);
 	exit(EXIT_SUCCESS);
 }
 
 static void	pick_up_fork(t_philo *philo, sem_t *forks)
 {
-	log_philo_action(BLUE, philo, "has taken a fork");
 	sem_wait(forks);
+	log_philo_action(BLUE, philo, "has taken a fork");
 }
 
 /**
@@ -78,11 +78,9 @@ static void	philo_eating(t_philo *philo)
 	sleep_ms(philo->rules->time_to_eat);
 	if (philo->rules->eat_limit)
 	{
-		if (philo->eat_count == philo->rules->required_meals)
-		{
-			sem_post(philo->simulation->eat_counter);
-		}
 		philo->eat_count++;
+		if (philo->eat_count == philo->rules->required_meals)
+			sem_post(philo->simulation->eat_counter);
 	}
 	sem_post(philo->forks);
 	sem_post(philo->forks);

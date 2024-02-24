@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/23 14:37:16 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/24 22:07:42 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,22 +50,7 @@ typedef struct s_rules
 }	t_rules;
 
 typedef struct s_philo t_philo;
-typedef struct s_simulation
-{
-	uint16_t	philo_count;
-	t_philo		*philos; // Array of philos
-	uint64_t	start_time; // milliseconds since Epoch
-	t_rules		rules;
-	sem_t		*forks;
-	bool		running;
-	sem_t		*master_lock;
-	sem_t		*printer;
-	pid_t		*pids;
-	sem_t		*eat_counter;
-	// sem_t		*blocker;
-	sem_t		*terminator;
-}	t_simulation;
-
+typedef struct s_simulation	t_simulation;
 typedef struct s_philo
 {
 	t_simulation	*simulation;
@@ -77,13 +62,36 @@ typedef struct s_philo
 	uint64_t		last_meal_time;
 	uint64_t		death_time;
 	sem_t			*forks;
+	sem_t			*death_sema;
 }	t_philo;
 
+typedef struct s_simulation
+{
+	uint16_t	philo_count;
+	// t_philo		*philos; // Array of philos
+	uint64_t	start_time; // milliseconds since Epoch
+	t_rules		rules;
+	sem_t		*forks;
+	// bool		running;
+	sem_t		*master_lock;
+	sem_t		*printer;
+	pid_t		*pids; /* Array of process IDs that refer to each philo */
+	sem_t		*eat_counter;
+	// sem_t		*blocker;
+	sem_t		*terminator;
+	t_philo		p;
+	sem_t		**philo_semas;
+}	t_simulation;
+#include <stdarg.h>
+
+#define log(fmt, ...) \
+fprintf(stdout, "%s:%d:%s(): " fmt, __FILE__, __LINE__, __func__, ##__VA_ARGS__);
 
 /* Argument parsing and initialization */
 
 void		parse_args(int argc, char **argv, t_simulation *args);
-void		init_simulation(t_simulation *simulation);
+// void		init_simulation(t_simulation *simulation);
+void init_semaphores(t_simulation *sim);
 void		handle_errors(t_status status);
 
 /* Timing */
@@ -116,6 +124,7 @@ void		log_philo_action(const char *color, t_philo *philo,
 void		log_philo_death(const char *color, t_simulation *simulation,
 				uint16_t id);
 void	error_and_exit(t_status	errcode);
+void	generate_semaphore_name(char *name, uint16_t num);
 
 
 #endif

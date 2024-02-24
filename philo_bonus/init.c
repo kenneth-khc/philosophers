@@ -6,51 +6,52 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/23 12:16:01 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/24 22:13:11 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static void
-init_philos(t_simulation *sim);
+// static void
+// init_philos(t_simulation *sim);
 
-static void
-init_semaphores(t_simulation *sim);
+// static void
+// init_semaphores(t_simulation *sim);
 
 /* Initialize the simulation to be run but keep the threads paused */
-void	init_simulation(t_simulation *sim)
-{
-	sim->running = true;
-	init_philos(sim);
-	init_semaphores(sim);
-}
+// void	init_simulation(t_simulation *sim)
+// {
+// 	// sim->running = true;
+// 	init_philos(sim);
+// 	init_semaphores(sim);
+// }
 
-/* Initializes philos and sets their id and state to alive */
-static void	init_philos(t_simulation *sim)
-{
-	t_philo		*philo;
-	uint16_t	i;
+// /* Initializes philos and sets their id and state to alive */
+// static void	init_philos(t_simulation *sim)
+// {
+// 	t_philo		*philo;
+// 	uint16_t	i;
 
-	sim->philos = malloc(sizeof(t_philo) * sim->philo_count);
-	if (sim->philos == NULL)
-		error_and_exit(E_MALLOC_FAILED);
-	i = 0;
-	while (i < sim->philo_count)
-	{
-		philo = &sim->philos[i];
-		philo->simulation = sim;
-		philo->rules = &sim->rules;
-		philo->id = i + 1;
-		philo->alive = true;
-		philo->eat_count = 0;
-		i++;
-	}
-	if (sim->philo_count == 1)
-		philo->alive = false;
-}
+// 	sim->philos = malloc(sizeof(t_philo) * sim->philo_count);
+// 	if (sim->philos == NULL)
+// 		error_and_exit(E_MALLOC_FAILED);
+// 	i = 0;
+// 	while (i < sim->philo_count)
+// 	{
+// 		philo = &sim->philos[i];
+// 		philo->simulation = sim;
+// 		philo->rules = &sim->rules;
+// 		philo->id = i + 1;
+// 		philo->alive = true;
+// 		philo->eat_count = 0;
+// 		i++;
+// 	}
+// 	if (sim->philo_count == 1)
+// 		philo->alive = false;
+// }
 
-static void init_semaphores(t_simulation *sim)
+// static void init_semaphores(t_simulation *sim)
+void init_semaphores(t_simulation *sim)
 {
 	(void)sim;
 	sem_unlink("FORKS");
@@ -63,40 +64,35 @@ static void init_semaphores(t_simulation *sim)
 	sim->eat_counter = sem_open("EAT_COUNTER", O_CREAT, 0666, 0);
 	sem_unlink("TERMINATOR");
 	sim->terminator = sem_open("TERMINATOR", O_CREAT, 0666, 0);
+	sim->philo_semas = malloc((sizeof(sem_t *) * sim->philo_count));
+	if (sim->philo_semas == NULL)
+		error_and_exit(E_MALLOC_FAILED);
+	
+	uint16_t	i;
+	char		name[17];
+	i = 0;
+	while (i < sim->philo_count)
+	{
+		i++;
+		generate_semaphore_name(name, i);
+		log("Name: %s\n", name);
+	}
+	exit(0);
 }
 
-/**
- * Assign left and right forks to a philo.
- * Philo n will have Fork n in its left hand and Fork n+1 in its right
- */
-// static void	assign_forks(t_philo *philos, t_fork *forks, uint16_t count)
-// {
-// 	t_philo		*philo;
-// 	uint16_t	i;
+void	generate_semaphore_name(char *name, uint16_t num)
+{
+	int		i;
 
-// 	i = 0;
-// 	while (i < count)
-// 	{
-// 		philo = &philos[i];
-// 		philo->left_fork = &forks[i];
-// 		philo->right_fork = &forks[(i + 1) % count];
-// 		if (philo->left_fork == philo->right_fork)
-// 			philo->alive = false;
-// 		i++;
-// 	}
-// }
-
-/* Initializes mutexes to protect critical sections between threads */
-// static t_status	init_mutexes(t_simulation *sim)
-// {
-// 	t_philo		*philo;
-// 	uint16_t	i;
-
-// 	i = 0;
-// 	while (i < sim->philo_count)
-// 	{
-// 		philo = &sim->philos[i];
-// 		i++;
-// 	}
-// 	return (SUCCESS);
-// }
+	i = 4;
+	const char	digits[] = "0123456789abcdef";
+	
+	name[i] = '\0';
+	while (i > 0)
+	{
+		i--;
+		name[i] = digits[num & 0xF];
+		num >>= 4;
+	}
+	
+}
