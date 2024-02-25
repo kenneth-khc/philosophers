@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/24 21:34:39 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/25 20:00:43 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ void	await_philos(t_simulation *sim)
 		// printf("Killing %d\n", sim->pids[i]);
 		i++;
 	}
+	sim->rules.eat_limit = false;
+	sem_post(sim->eat_counter);
 	log_message(GREEN, sim, "Simulation ended");
 }
 
@@ -58,6 +60,8 @@ void	*check_count(void *arg)
 	while (philos_satisfied != simulation->philo_count)
 	{
 		sem_wait(simulation->eat_counter);
+		if (simulation->rules.eat_limit == false)
+			return (NULL);
 		philos_satisfied++;
 	}
 	sem_wait(simulation->printer);
@@ -71,21 +75,20 @@ void	*check_count(void *arg)
 /* Clean up arrays and mutexes */
 void	clean_up(t_simulation *simulation)
 {
-	// t_philo		*philo;
-	// uint16_t	i;
-
-	// i = 0;
-	// while (i < simulation->philo_count)
-	// {
-	// 	philo = &simulation->philos[i];
-	// 	i++;
-	// }
-	// free(simulation->philos);
 	printf("PID: %d\n", getpid());
 	sem_close(simulation->terminator);
 	sem_close(simulation->eat_counter);
 	sem_close(simulation->printer);
 	sem_close(simulation->forks);
+	uint16_t	i;
+
+	i = 0;
+	while (simulation->philo_semas[i] != NULL)
+	{
+		sem_close(simulation->philo_semas[i]);
+		i++;
+	}
+	free(simulation->philo_semas);
 	free(simulation->pids);
 }
 

@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 16:21:37 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/24 21:10:11 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/25 22:22:13 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	start_simulation(t_simulation *sim)
 	while (i < sim->philo_count)
 	{
 		sim->p.id = i + 1;
+		sim->p.death_sema = sim->philo_semas[i];
 		id = fork();
 		if (id == -1)
 			exit(EXIT_FAILURE);
@@ -35,7 +36,8 @@ void	start_simulation(t_simulation *sim)
 		{
 			philosophize(&sim->p);
 		}
-		sim->pids[i] = id;
+		else
+			sim->pids[i] = id;
 		// printf("Spawned %d\n", sim->pids[i]);
 		i++;
 	}

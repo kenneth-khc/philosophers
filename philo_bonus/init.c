@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/24 22:13:11 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/25 22:21:40 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,35 +64,36 @@ void init_semaphores(t_simulation *sim)
 	sim->eat_counter = sem_open("EAT_COUNTER", O_CREAT, 0666, 0);
 	sem_unlink("TERMINATOR");
 	sim->terminator = sem_open("TERMINATOR", O_CREAT, 0666, 0);
-	sim->philo_semas = malloc((sizeof(sem_t *) * sim->philo_count));
+	sim->philo_semas = malloc((sizeof(sem_t *) * (sim->philo_count + 1)));
 	if (sim->philo_semas == NULL)
 		error_and_exit(E_MALLOC_FAILED);
 	
 	uint16_t	i;
-	char		name[17];
+	char		name[5];
 	i = 0;
 	while (i < sim->philo_count)
 	{
+		generate_semaphore_name(name, i + 1);
+		sem_unlink(name);
+		sim->philo_semas[i] = sem_open(name, O_CREAT, 0666, 1);
+		// log("Name: %s\n", name);
+		// log("Sema add: %p\n", sim->philo_semas[i]);
 		i++;
-		generate_semaphore_name(name, i);
-		log("Name: %s\n", name);
 	}
-	exit(0);
+	sim->philo_semas[i] = NULL;
 }
 
-void	generate_semaphore_name(char *name, uint16_t num)
+void	generate_semaphore_name(char *name, uint16_t philo_id)
 {
-	int		i;
+	const char	base16[] = "0123456789abcdef";
+	uint8_t		hex_digits;
 
-	i = 4;
-	const char	digits[] = "0123456789abcdef";
-	
-	name[i] = '\0';
-	while (i > 0)
+	hex_digits = 4;
+	name[hex_digits] = '\0';
+	while (hex_digits > 0)
 	{
-		i--;
-		name[i] = digits[num & 0xF];
-		num >>= 4;
+		hex_digits--;
+		name[hex_digits] = base16[philo_id & 0xF];
+		philo_id >>= 4;
 	}
-	
 }

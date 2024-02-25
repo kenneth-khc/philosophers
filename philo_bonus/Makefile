@@ -1,6 +1,6 @@
 NAME = philo_bonus
 CFLAGS = -Wall -Werror -Wextra
-# FSAN = -fsanitize=thread -g3
+FSAN = -fsanitize=thread -g3
 # FSAN = -fsanitize=address -g3
 
 ARGS = $(PC) $(TTD) $(TTE) $(TTS) $(EC)
