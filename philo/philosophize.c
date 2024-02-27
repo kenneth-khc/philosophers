@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/23 10:38:31 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/27 13:34:47 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,9 @@ static void	pick_up_fork(t_philo *philo, t_fork *fork)
  */
 static void	philo_eating(t_philo *philo)
 {
-	uint64_t	start_time;
-
-	start_time = get_current_time();
-	philo->last_meal_time = start_time;
+	philo->last_meal_time = get_current_time();
 	pthread_mutex_lock(&philo->death_time_mutex);
-	philo->death_time = start_time + philo->rules->time_to_die;
+	philo->death_time = philo->last_meal_time + philo->rules->time_to_die;
 	pthread_mutex_unlock(&philo->death_time_mutex);
 	log_philo_action(CYAN, philo, "is eating");
 	sleep_ms(philo->rules->time_to_eat);

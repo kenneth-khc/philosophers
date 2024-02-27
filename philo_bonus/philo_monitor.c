@@ -6,12 +6,12 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/20 17:38:41 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/25 23:07:30 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/27 19:33:43 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
-extern pthread_mutex_t	mutex;
+
 /* A secondary thread to monitor whether it's philo has starved or not */
 void	*philo_monitor(void	*arg)
 {
@@ -20,8 +20,6 @@ void	*philo_monitor(void	*arg)
 
 	philo = (t_philo *)arg;
 	sim = philo->simulation;
-	// log("Monitor ID: %d Sema: %p\n", philo->id, philo->death_sema);
-	// log("Alive: %d\n", philo->alive);
 	if (philo_is_alive(philo) == false)
 	{
 		sleep_ms(sim->rules.time_to_die);
@@ -29,7 +27,7 @@ void	*philo_monitor(void	*arg)
 	}
 	while (philo_is_alive(philo))
 	{
-		// sleep_ms(1);
+		sleep_ms(1);
 		if (philo_starved(philo))
 		{
 			log_philo_death(BOLD_RED, sim, philo->id);
@@ -42,32 +40,14 @@ void	*philo_monitor(void	*arg)
 /* Get current time and compare it with philo's starvation time */
 bool	philo_starved(t_philo *philo)
 {
-	bool	starved;
-
-	sem_wait(philo->death_sema);
-	starved = get_current_time() > philo->death_time;
-	sem_post(philo->death_sema);
+	bool		starved;
+	uint64_t	meal_time;
+	uint64_t	time_since_meal;
+	
+	sem_wait(philo->death_semaphore);
+	meal_time = (philo->meal_tv.tv_sec * 1000) + (philo->meal_tv.tv_usec / 1000);
+	time_since_meal = get_current_time() - meal_time;
+	starved = time_since_meal > philo->rules->time_to_die;
+	sem_post(philo->death_semaphore);
 	return (starved);
 }
-
-
-void	kill_philo(t_philo *philo)
-{
-	philo->alive = false;
-}
-
-// void	kill_philos(t_simulation *sim)
-// {
-// 	t_philo		*philo;
-// 	uint16_t	i;
-// 	uint16_t	count;
-
-// 	i = 0;
-// 	count = sim->philo_count;
-// 	while (i < count)
-// 	{
-// 		philo = &sim->philos[i];
-// 		kill_philo(philo);
-// 		i++;
-// 	}
-// }

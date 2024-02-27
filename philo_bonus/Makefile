@@ -1,5 +1,6 @@
+CC = cc
 NAME = philo_bonus
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra -g3
 FSAN = -fsanitize=thread -g3
 # FSAN = -fsanitize=address -g3
 
@@ -21,7 +22,7 @@ philo_monitor.c \
 simulation_utils.c \
 
 a:
-	cc $(SOURCES) $(CFLAGS) $(FSAN) -o $(NAME)
+	$(CC) $(SOURCES) $(CFLAGS) $(FSAN) -o $(NAME)
 	./$(NAME) $(ARGS) | tee $(log)
 
 check:

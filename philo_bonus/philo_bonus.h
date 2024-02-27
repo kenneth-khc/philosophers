@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/25 23:07:39 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/27 18:47:55 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # include <semaphore.h>
 # include <fcntl.h>
 # include <signal.h>
+# include <sys/wait.h>
 
 
 #include <errno.h>
@@ -61,26 +62,27 @@ typedef struct s_philo
 	uint64_t		eat_count;
 	uint64_t		last_meal_time;
 	uint64_t		death_time;
-	sem_t			*forks;
-	sem_t			*death_sema;
+	sem_t			*forks; /* Pointer to all the forks on the table */
+	sem_t			*death_semaphore; /* Semaphore as mutex to protect philo's death time */
+	struct timeval	meal_tv;
 }	t_philo;
 
 typedef struct s_simulation
 {
 	uint16_t	philo_count;
-	// t_philo		*philos; // Array of philos
-	uint64_t	start_time; // milliseconds since Epoch
+	t_philo		philo;	/* Philo structure used to hold each philo and then cloned */
+	uint64_t	start_time; /* Milliseconds since Epoch */
 	t_rules		rules;
-	sem_t		*forks;
-	// bool		running;
-	sem_t		*master_lock;
+	sem_t		*forks;	/* Available forks on the table represented by a semaphore */
+	bool		running;
+	sem_t		*gatekeeper;
+	sem_t		*temp;
 	sem_t		*printer;
 	pid_t		*pids; /* Array of process IDs that refer to each philo */
-	sem_t		*eat_counter;
-	// sem_t		*blocker;
-	sem_t		*terminator;
-	t_philo		p;
-	sem_t		**philo_semas;
+	sem_t		*eat_counter; /* Signal eat counter everytime a philo hits their target */
+	sem_t		**philo_semaphores; /* Array of semaphores for each philo */
+	int			dead_ret;
+	pthread_mutex_t	lock;
 }	t_simulation;
 #include <stdarg.h>
 
@@ -92,7 +94,6 @@ fprintf(stdout, "%s:%d:%s(): " fmt, __FILE__, __LINE__, __func__, ##__VA_ARGS__)
 void		parse_args(int argc, char **argv, t_simulation *args);
 // void		init_simulation(t_simulation *simulation);
 void init_semaphores(t_simulation *sim);
-void		handle_errors(t_status status);
 
 /* Timing */
 
@@ -114,6 +115,7 @@ void		kill_philo(t_philo *philo);
 void		kill_philos(t_simulation *simulation);
 void		turn_off_simulation(t_simulation *simulation);
 void		clean_up(t_simulation *simulation);
+void	fork_philos(t_simulation *sim);
 
 /* Logging messages to stdout */
 
@@ -124,7 +126,10 @@ void		log_philo_action(const char *color, t_philo *philo,
 void		log_philo_death(const char *color, t_simulation *simulation,
 				uint16_t id);
 void	error_and_exit(t_status	errcode);
-void	generate_semaphore_name(char *name, uint16_t num);
 
-
+# if 1
+#include <signal.h>
+void	set_sigterm_handler(void);
+void	flush_output(int signum);
+# endif
 #endif

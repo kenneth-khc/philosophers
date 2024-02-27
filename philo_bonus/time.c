@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 10:50:30 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/23 14:24:13 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/27 17:16:27 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,7 @@ void	sleep_ms(uint64_t ms_to_sleep)
 	time_spent_sleeping = 0;
 	while (time_spent_sleeping < ms_to_sleep)
 	{
-		// usleep(650);
-		usleep(50);
+		usleep(650);
 		time_spent_sleeping = get_time_since(start_time);
 	}
 	return ;
