@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/27 19:37:51 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/28 22:21:10 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	main(int argc, char **argv)
 {
 	t_simulation	sim;
 
-	set_sigterm_handler();
+	// set_sigterm_handler();
 	parse_args(argc, argv, &sim);
 	init_semaphores(&sim);
 	start_simulation(&sim);
@@ -24,28 +24,37 @@ int	main(int argc, char **argv)
 	clean_up(&sim);
 }
 
-	int	ret;
+	// int	ret;
 /* Main thread waits for philos and its monitors to finish running */
 void	await_philos(t_simulation *sim)
 {
-	pthread_t	count_checker;
+	// pthread_t	count_checker;
 	uint16_t	i;
+	pid_t		id = 0;
 
+	// if (sim->rules.eat_limit)
+	// {
+	// 	if (pthread_create(&count_checker, NULL, check_count, sim) != 0)
+	// 		error_and_exit(E_THREAD_FAILED);
+	// 	pthread_detach(count_checker);
+	// }
 	if (sim->rules.eat_limit)
 	{
-		if (pthread_create(&count_checker, NULL, check_count, sim) != 0)
-			error_and_exit(E_THREAD_FAILED);
-		pthread_detach(count_checker);
+		id = fork();
+		if (id == -1)
+			exit(EXIT_FAILURE);
+		else if (id == 0)
+			check_count(sim);
 	}
 	i = 0;
-	waitpid(-1, &ret, 0);
-	turn_off_simulation(sim);
+	waitpid(-1, NULL, 0);
+	if (sim->rules.eat_limit)
+		kill(id, SIGTERM);
 	while (i < sim->philo_count)
 	{
 		kill(sim->pids[i], SIGTERM);
 		i++;
 	}
-	sem_post(sim->eat_counter);
 	log_message(GREEN, sim, "Simulation ended");
 }
 
@@ -61,19 +70,14 @@ void	*check_count(void *arg)
 	while (philos_satisfied < sim->philo_count)
 	{
 		sem_wait(sim->eat_counter);
-		if (simulation_is_running(sim))
-			philos_satisfied++;
-		else
-		{
-			return (NULL);
-		}
+		philos_satisfied++;
 	}
 	sem_wait(sim->printer);
 	printf("%*u%s All philos ate at least %llu times%s\n", PADDING,
 		get_time_since(sim->start_time), GREEN,
 		sim->rules.required_meals, COLOR_RESET);
-	kill(sim->pids[0], SIGTERM);
-	return (NULL);
+	// return (NULL);
+	exit(EXIT_SUCCESS);
 }
 
 /* Clean up arrays and mutexes */

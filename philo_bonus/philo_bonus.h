@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/27 18:47:55 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/28 22:21:19 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <semaphore.h>
 # include <fcntl.h>
 # include <signal.h>
-# include <sys/wait.h>
+// # include <sys/wait.h>
 
 
 #include <errno.h>
