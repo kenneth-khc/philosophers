@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 13:18:05 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/28 22:21:10 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/28 22:22:56 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	main(int argc, char **argv)
 {
 	t_simulation	sim;
 
-	// set_sigterm_handler();
+	set_sigterm_handler();
 	parse_args(argc, argv, &sim);
 	init_semaphores(&sim);
 	start_simulation(&sim);
@@ -24,32 +24,24 @@ int	main(int argc, char **argv)
 	clean_up(&sim);
 }
 
-	// int	ret;
 /* Main thread waits for philos and its monitors to finish running */
 void	await_philos(t_simulation *sim)
 {
-	// pthread_t	count_checker;
 	uint16_t	i;
-	pid_t		id = 0;
+	pid_t		checker_pid;
 
-	// if (sim->rules.eat_limit)
-	// {
-	// 	if (pthread_create(&count_checker, NULL, check_count, sim) != 0)
-	// 		error_and_exit(E_THREAD_FAILED);
-	// 	pthread_detach(count_checker);
-	// }
-	if (sim->rules.eat_limit)
+	if (sim->rules.eat_limit == true)
 	{
-		id = fork();
-		if (id == -1)
-			exit(EXIT_FAILURE);
-		else if (id == 0)
+		checker_pid = fork();
+		if (checker_pid == -1)
+			error_and_exit(E_FORK_FAILED);
+		else if (checker_pid == 0)
 			check_count(sim);
 	}
-	i = 0;
 	waitpid(-1, NULL, 0);
-	if (sim->rules.eat_limit)
-		kill(id, SIGTERM);
+	if (sim->rules.eat_limit == true)
+		kill(checker_pid, SIGTERM);
+	i = 0;
 	while (i < sim->philo_count)
 	{
 		kill(sim->pids[i], SIGTERM);
@@ -66,7 +58,6 @@ void	*check_count(void *arg)
 
 	sim = (t_simulation *)arg;
 	philos_satisfied = 0;
-	// pid_t	dead = 0;
 	while (philos_satisfied < sim->philo_count)
 	{
 		sem_wait(sim->eat_counter);
@@ -76,7 +67,6 @@ void	*check_count(void *arg)
 	printf("%*u%s All philos ate at least %llu times%s\n", PADDING,
 		get_time_since(sim->start_time), GREEN,
 		sim->rules.required_meals, COLOR_RESET);
-	// return (NULL);
 	exit(EXIT_SUCCESS);
 }
 
@@ -89,12 +79,12 @@ void	clean_up(t_simulation *simulation)
 	sem_close(simulation->printer);
 	sem_close(simulation->forks);
 	i = 0;
-	while (simulation->philo_semaphores[i] != NULL)
+	while (simulation->mealtime_semaphores[i] != NULL)
 	{
-		sem_close(simulation->philo_semaphores[i]);
+		sem_close(simulation->mealtime_semaphores[i]);
 		i++;
 	}
-	free(simulation->philo_semaphores);
+	free(simulation->mealtime_semaphores);
 	free(simulation->pids);
 }
 

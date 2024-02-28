@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/13 16:21:37 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/27 19:55:07 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/28 19:00:48 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,10 @@ void	start_simulation(t_simulation *sim)
 	if (sim->pids == NULL)
 		error_and_exit(E_MALLOC_FAILED);
 	init_philo(sim);
-	sem_wait(sim->gatekeeper);
 	fork_philos(sim);
 	i = 0;
 	while (i <= sim->philo_count)
 	{
-		sem_post(sim->gatekeeper);
 		i++;
 	}
 }
@@ -46,7 +44,7 @@ void	fork_philos(t_simulation *sim)
 		// while (j < 10 && i + j < sim->philo_count)
 		// {
 			sim->philo.id = i + j + 1;
-			// sim->philo.death_semaphore = sim->philo_semaphores[i+j];
+			// sim->philo.mealtime_semaphore = sim->mealtime_semaphores[i+j];
 			id = fork();
 			if (id == -1)
 				exit(EXIT_FAILURE);

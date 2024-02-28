@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/27 18:20:34 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/28 18:59:15 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,9 @@ void	*philosophize(void *arg)
 	(void)arg;
 	philo = (t_philo *)arg;
 	philo->forks = philo->simulation->forks;
-	sem_wait(philo->simulation->gatekeeper);
-	// philo->last_meal_time = get_current_time();
-	// philo->death_time = philo->simulation->start_time + philo->rules->time_to_die;
-	gettimeofday(&philo->meal_tv, NULL);
+	philo->last_meal_time = get_current_time();
+	philo->death_time = philo->simulation->start_time + philo->rules->time_to_die;
+	gettimeofday(&philo->mealtime, NULL);
 	if (pthread_create(&monitor, NULL, philo_monitor, philo) != 0)
 		error_and_exit(E_THREAD_FAILED);
 	if (philo->id % 2 != 0)
@@ -44,7 +43,8 @@ void	*philosophize(void *arg)
 		log_philo_action(YELLOW, philo, "is thinking");
 		sleep_ms(philo->simulation->rules.time_to_eat);
 	}
-	while (philo_is_alive(philo))
+	// while (philo_is_alive(philo))
+	while (philo->alive)
 	{
 		pick_up_fork(philo, philo->forks);
 		pick_up_fork(philo, philo->forks);
@@ -66,14 +66,11 @@ static void	pick_up_fork(t_philo *philo, sem_t *forks)
  * Calculate philo's starvation time, increment its eat count
  * and put down forks once done eating
  */
-	// philo->death_time = (philo->meal_tv.tv_sec * 1000 + philo->meal_tv.tv_usec / 1000) + philo->rules->time_to_die;
-	// philo->death_time = philo->last_meal_time + philo->rules->time_to_die;
-	// philo->last_meal_time = get_current_time();
 static void	philo_eating(t_philo *philo)
 {
-	sem_wait(philo->death_semaphore);
-	gettimeofday(&philo->meal_tv, NULL);
-	sem_post(philo->death_semaphore);
+	sem_wait(philo->mealtime_semaphore);
+	gettimeofday(&philo->mealtime, NULL);
+	sem_post(philo->mealtime_semaphore);
 	log_philo_action(CYAN, philo, "is eating");
 	sleep_ms(philo->rules->time_to_eat);
 	if (philo->rules->eat_limit)

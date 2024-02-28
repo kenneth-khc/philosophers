@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/28 22:21:19 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/28 22:23:03 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 # include <semaphore.h>
 # include <fcntl.h>
 # include <signal.h>
-// # include <sys/wait.h>
+# include <sys/wait.h>
 
 
 #include <errno.h>
@@ -37,7 +37,8 @@ typedef enum e_status
 	E_INVALID_ARG_COUNT,
 	E_INVALID_ARG_TYPE,
 	E_THREAD_FAILED,
-	E_JOIN_FAILED
+	E_JOIN_FAILED,
+	E_FORK_FAILED
 }	t_status;
 
 /* Rules each philo has to follow. Times are in milliseconds */
@@ -63,8 +64,8 @@ typedef struct s_philo
 	uint64_t		last_meal_time;
 	uint64_t		death_time;
 	sem_t			*forks; /* Pointer to all the forks on the table */
-	sem_t			*death_semaphore; /* Semaphore as mutex to protect philo's death time */
-	struct timeval	meal_tv;
+	sem_t			*mealtime_semaphore; /* Semaphore as mutex to protect philo's death time */
+	struct timeval	mealtime;
 }	t_philo;
 
 typedef struct s_simulation
@@ -75,12 +76,10 @@ typedef struct s_simulation
 	t_rules		rules;
 	sem_t		*forks;	/* Available forks on the table represented by a semaphore */
 	bool		running;
-	sem_t		*gatekeeper;
-	sem_t		*temp;
 	sem_t		*printer;
 	pid_t		*pids; /* Array of process IDs that refer to each philo */
 	sem_t		*eat_counter; /* Signal eat counter everytime a philo hits their target */
-	sem_t		**philo_semaphores; /* Array of semaphores for each philo */
+	sem_t		**mealtime_semaphores; /* Array of semaphores for each philo */
 	int			dead_ret;
 	pthread_mutex_t	lock;
 }	t_simulation;
@@ -104,7 +103,6 @@ void		sleep_ms(uint64_t milliseconds_to_sleep);
 /* Philo routines and helper functions for monitoring */
 
 void		start_simulation(t_simulation *simulation);
-bool		simulation_is_running(t_simulation *simulation);
 void		*philosophize(void *arg);
 void		*philo_monitor(void	*arg);
 bool		philo_is_alive(t_philo *philo);
@@ -113,7 +111,6 @@ bool		philo_starved(t_philo *philo);
 void		await_philos(t_simulation *simulation);
 void		kill_philo(t_philo *philo);
 void		kill_philos(t_simulation *simulation);
-void		turn_off_simulation(t_simulation *simulation);
 void		clean_up(t_simulation *simulation);
 void	fork_philos(t_simulation *sim);
 
