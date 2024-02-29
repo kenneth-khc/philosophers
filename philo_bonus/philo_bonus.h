@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.h                                            :+:      :+:    :+:   */
+/*   philo_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/29 22:49:10 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/29 22:39:25 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILO_H
-# define PHILO_H
+#ifndef PHILO_BONUS_H
+# define PHILO_BONUS_H
 
 # include <stdio.h>
 # include <stdlib.h>
@@ -19,8 +19,19 @@
 # include <sys/time.h>
 # include <pthread.h>
 # include <stdbool.h>
-
+# include <semaphore.h>
+# include <fcntl.h>
+# include <signal.h>
+# include <sys/wait.h>
 # include "color.h"
+
+# if 0
+#  include <signal.h>
+
+void		set_sigterm_handler(void);
+void		flush_output(int signum);
+
+# endif
 
 /* Error codes */
 typedef enum e_status
@@ -30,7 +41,8 @@ typedef enum e_status
 	E_INVALID_ARG_COUNT,
 	E_INVALID_ARG_TYPE,
 	E_THREAD_FAILED,
-	E_JOIN_FAILED
+	E_JOIN_FAILED,
+	E_FORK_FAILED
 }	t_status;
 
 /* Rules each philo has to follow. Times are in milliseconds */
@@ -43,49 +55,38 @@ typedef struct s_rules
 	uint64_t	required_meals;
 }	t_rules;
 
-typedef pthread_mutex_t		t_mutex;
-
-typedef struct s_fork
-{
-	t_mutex	mutex;
-}	t_fork;
-
+typedef struct s_philo		t_philo;
 typedef struct s_simulation	t_simulation;
 typedef struct s_philo
 {
 	t_simulation	*simulation;
 	t_rules			*rules;
-	t_fork			*left_fork;
-	t_fork			*right_fork;
 	uint16_t		id;
-	pthread_t		thread;
+	pthread_t		monitor;
 	bool			alive;
-	t_mutex			alive_mutex;
 	uint64_t		eat_count;
-	t_mutex			eat_count_mutex;
-	uint64_t		last_meal_time;
-	t_mutex			meal_time_mutex;
-	uint64_t		death_time;
-	t_mutex			death_time_mutex;
+	sem_t			*forks; /* Pointer to all the forks on the table */
+	sem_t			*mealtime_semaphore; /* Semaphore as mutex */
+	struct timeval	mealtime;
 }	t_philo;
 
 typedef struct s_simulation
 {
-	uint16_t	philo_count;
-	t_philo		*philos; /* Array of philos */
-	t_fork		*forks; /* Array of forks */
-	uint64_t	start_time; /* Milliseconds since Epoch */
 	t_rules		rules;
-	bool		running;
-	t_mutex		mutex;
-	t_mutex		print_mutex;
+	uint16_t	philo_count;
+	t_philo		philo; /* Philo info to be cloned */
+	pid_t		*pids; /* Array of PIDs that refer to each philo */
+	uint64_t	start_time; /* Milliseconds since Epoch */
+	sem_t		*forks; /* Available forks represented by a semaphore */
+	sem_t		*printer;
+	sem_t		*eat_counter; /* Signalled when a philo is full */
+	sem_t		**mealtime_semaphores; /* Array of semaphores for each philo */
 }	t_simulation;
 
 /* Argument parsing and initialization */
 
-t_status	parse_args(int argc, char **argv, t_simulation *args);
-t_status	init_simulation(t_simulation *simulation);
-void		handle_errors(t_status status);
+void		parse_args(int argc, char **argv, t_simulation *args);
+void		init_semaphores(t_simulation *sim);
 
 /* Timing */
 
@@ -95,17 +96,12 @@ void		sleep_ms(uint64_t milliseconds_to_sleep);
 
 /* Philo routines and helper functions for monitoring */
 
-t_status	start_simulation(t_simulation *simulation);
-bool		simulation_is_running(t_simulation *simulation);
+void		start_simulation(t_simulation *simulation);
 void		*philosophize(void *arg);
 void		*philo_monitor(void	*arg);
-bool		philo_is_alive(t_philo *philo);
 void		*check_count(void *arg);
 bool		philo_starved(t_philo *philo);
-t_status	await_philos(t_simulation *simulation);
-void		kill_philo(t_philo *philo);
-void		kill_philos(t_simulation *simulation);
-void		turn_off_simulation(t_simulation *simulation);
+void		await_philos(t_simulation *simulation);
 void		clean_up(t_simulation *simulation);
 
 /* Logging messages to stdout */
@@ -116,5 +112,6 @@ void		log_philo_action(const char *color, t_philo *philo,
 				const char *msg);
 void		log_philo_death(const char *color, t_simulation *simulation,
 				uint16_t id);
+void		error_and_exit(t_status	errcode);
 
 #endif

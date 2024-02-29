@@ -1,5 +1,5 @@
 CC 		= cc
-NAME 	= philo
+NAME 	= philo_bonus
 CFLAGS 	= -Wall -Werror -Wextra $(TSAN) $(ASAN) $(DEBUG)
 # TSAN 	= -fsanitize=thread
 # ASAN 	= -fsanitize=address
@@ -7,7 +7,7 @@ DEBUG	= -g3
 GREEN	= \e[1;32m
 RESET	= \e[0m
 
-SOURCES = main.c parsing.c init.c time.c philosophize.c simulation.c philo_monitor.c simulation_utils.c waiter.c
+SOURCES = main.c parsing.c semaphores.c time.c philosophize.c simulation.c philo_monitor.c simulation_utils.c waiter.c
 OBJ_DIR = objects/
 OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
 OBJECTS := $(addprefix $(OBJ_DIR), $(OBJECTS))

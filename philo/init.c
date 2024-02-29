@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/21 21:32:23 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/23 11:52:05 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void
 assign_forks(t_philo *philos, t_fork *forks, uint16_t count);
 
 /* Initialize the simulation to be run but keep the threads paused */
-t_status	initialize_simulation(t_simulation *sim)
+t_status	init_simulation(t_simulation *sim)
 {
 	t_status	status;
 
