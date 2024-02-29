@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/27 01:14:02 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/28 18:59:15 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/29 21:58:17 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,22 +28,17 @@ philo_thinking(t_philo *philo);
 void	*philosophize(void *arg)
 {
 	t_philo		*philo;
-	pthread_t	monitor;
 
-	(void)arg;
 	philo = (t_philo *)arg;
 	philo->forks = philo->simulation->forks;
-	philo->last_meal_time = get_current_time();
-	philo->death_time = philo->simulation->start_time + philo->rules->time_to_die;
 	gettimeofday(&philo->mealtime, NULL);
-	if (pthread_create(&monitor, NULL, philo_monitor, philo) != 0)
+	if (pthread_create(&philo->monitor, NULL, philo_monitor, philo) != 0)
 		error_and_exit(E_THREAD_FAILED);
 	if (philo->id % 2 != 0)
 	{
 		log_philo_action(YELLOW, philo, "is thinking");
 		sleep_ms(philo->simulation->rules.time_to_eat);
 	}
-	// while (philo_is_alive(philo))
 	while (philo->alive)
 	{
 		pick_up_fork(philo, philo->forks);
@@ -52,7 +47,7 @@ void	*philosophize(void *arg)
 		philo_sleeping(philo);
 		philo_thinking(philo);
 	}
-	pthread_join(monitor, NULL);
+	pthread_join(philo->monitor, NULL);
 	exit(EXIT_SUCCESS);
 }
 

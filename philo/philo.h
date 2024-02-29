@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/22 12:10:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/23 14:42:37 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/29 22:49:10 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,9 +72,9 @@ typedef struct s_philo
 typedef struct s_simulation
 {
 	uint16_t	philo_count;
-	t_philo		*philos; // Array of philos
-	t_fork		*forks; // Array of forks
-	uint64_t	start_time; // milliseconds since Epoch
+	t_philo		*philos; /* Array of philos */
+	t_fork		*forks; /* Array of forks */
+	uint64_t	start_time; /* Milliseconds since Epoch */
 	t_rules		rules;
 	bool		running;
 	t_mutex		mutex;

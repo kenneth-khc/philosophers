@@ -6,14 +6,14 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/23 14:35:59 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/27 14:30:11 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/29 18:28:36 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COLOR_H
 # define COLOR_H
 
-# if 0
+# if 1
 /* ANSI color codes */
 #  define BLACK "\e[0;30m"
 #  define MAGENTA "\e[0;31m"

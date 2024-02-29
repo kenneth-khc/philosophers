@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/25 18:24:16 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/28 19:04:53 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/02/29 21:49:37 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ void	init_semaphores(t_simulation *sim)
 	sim->forks = sem_open("FORKS", O_CREAT, 0666, sim->philo_count);
 	sim->printer = sem_open("PRINTER", O_CREAT, 0666, 1);
 	sim->eat_counter = sem_open("EAT_COUNTER", O_CREAT, 0666, 0);
-	sim->mealtime_semaphores = malloc((sizeof(sem_t *) * (sim->philo_count + 1)));
+	sim->mealtime_semaphores
+		= malloc((sizeof(sem_t *) * (sim->philo_count + 1)));
 	if (sim->mealtime_semaphores == NULL)
 		error_and_exit(E_MALLOC_FAILED);
 	i = 0;
@@ -41,12 +42,13 @@ void	init_semaphores(t_simulation *sim)
 	sim->mealtime_semaphores[i] = NULL;
 }
 
-#define NIBBLE 4
-
 /** 
  * Generate a unique semaphore name for the philo based on its
  * id and converting it to hexadecimal
  */
+
+#define NIBBLE 4
+
 static void	generate_semaphore_name(char *name, uint16_t philo_id)
 {
 	const char	base16[] = "0123456789ABCDEF";

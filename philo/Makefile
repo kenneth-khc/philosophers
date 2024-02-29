@@ -1,31 +1,31 @@
 CC 		= cc
 NAME 	= philo
-CFLAGS 	= -Wall -Werror -Wextra
-TSAN 	= -fsanitize=thread
-# ASAN = -fsanitize=address
-DEBUG	= g3
+CFLAGS 	= -Wall -Werror -Wextra $(TSAN) $(ASAN) $(DEBUG)
+# TSAN 	= -fsanitize=thread
+# ASAN 	= -fsanitize=address
+DEBUG	= -g3
 GREEN	= \e[1;32m
 RESET	= \e[0m
 
-SOURCES = \
-main.c \
-parsing.c \
-init.c time.c \
-philosophize.c \
-simulation.c \
-philo_monitor.c \
-simulation_utils.c
-
-OBJECTS = $(SOURCES:.c=.o)
+SOURCES = main.c parsing.c init.c time.c philosophize.c simulation.c philo_monitor.c simulation_utils.c waiter.c
+OBJ_DIR = objects/
+OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
+OBJECTS := $(addprefix $(OBJ_DIR), $(OBJECTS))
 
 all: $(NAME)
 
-$(NAME): $(OBJECTS)
-	$(CC) -c $(SOURCES)
+$(NAME): $(OBJ_DIR) $(OBJECTS)
+	$(CC) $(CFLAGS) $(OBJECTS) -o $(NAME)
 	@printf "$(GREEN)Built $(NAME).$(RESET)\n"
 
+$(OBJ_DIR)%.o: %.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) $< -c -o $@
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
 clean:
-	rm -rf $(OBJECTS)
+	rm -rf $(OBJ_DIR)
 	@printf "$(GREEN)Cleaned object files.$(RESET)\n"
  
 fclean: clean
