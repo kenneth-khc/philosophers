@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 22:41:31 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/29 22:48:02 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/03/01 12:21:48 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_status	await_philos(t_simulation *sim)
 	t_philo		*philo;
 	uint16_t	i;
 
-	if (sim->rules.eat_limit)
+	if (sim->rules.eat_limit && sim->philo_count > 0)
 	{
 		if (pthread_create(&count_checker, NULL, check_count, sim) != 0)
 			return (E_THREAD_FAILED);

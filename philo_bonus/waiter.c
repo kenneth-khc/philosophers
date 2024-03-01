@@ -6,7 +6,7 @@
 /*   By: kecheong <kecheong@student.42kl.edu.my>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/29 18:25:06 by kecheong          #+#    #+#             */
-/*   Updated: 2024/02/29 22:00:57 by kecheong         ###   ########.fr       */
+/*   Updated: 2024/03/01 12:20:22 by kecheong         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	await_philos(t_simulation *sim)
 	pid_t		checker_pid;
 	uint16_t	i;
 
-	if (sim->rules.eat_limit == true)
+	if (sim->rules.eat_limit == true && sim->philo_count > 0)
 	{
 		checker_pid = fork();
 		if (checker_pid == -1)
@@ -48,6 +48,8 @@ void	*check_count(void *arg)
 	philos_satisfied = 0;
 	while (philos_satisfied < sim->philo_count)
 	{
+		if (sim->rules.required_meals == 0)
+			sem_post(sim->eat_counter);
 		sem_wait(sim->eat_counter);
 		philos_satisfied++;
 	}
